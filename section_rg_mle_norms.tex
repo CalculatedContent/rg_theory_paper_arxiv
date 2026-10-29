@@ -17,7 +17,7 @@ $\lambda/\PLstart$.
 \qquad
 \text{MLE: }\tilde{\lambda}_{\mathrm PL}:=\frac{\lambda}{\PLstart}.
 }
-At marginality, $\alpha=2$ tail implies $M\simeq e\PLstart$.
+At $\alpha=2$, matching requires $M\simeq e\PLstart$.
 \takeaway{RG scale invariance motivates $1/M$.
 Why these normalizations align remains an open question.}
 \end{tcolorbox}
@@ -64,15 +64,15 @@ because truncation changes the cutoff and retained fraction.
 The ~\WW tool fits the power law tail using a Maximum Likelihood Estimator (MLE),
 which itself is defined by estimating the mean log-eigenvalue of the tail
 \begin{equation}
-\left\langle\log\frac{\lambda}{\PLstart}\right\rangle_{\rm MLE}=\frac{1}{\hat\alpha-1},
+\left\langle\log\tilde{\lambda}_{\mathrm{PL}}\right\rangle_{\rm MLE}=\frac{1}{\hat\alpha-1},
 \qquad
 G_{\rm PL}=\PLstart e^{1/(\hat\alpha-1)}.
 \label{eq:mle_logmean_bridge}
 \end{equation}
 where $G_{\rm PL}$ is the \emph{retained geometric mean}.
 At $\hat\alpha=2$, the expected or mean log-eigenvalue is
-$\langle \ln \tilde{\lambda}\rangle_{\rm MLE}=1.0$ when
-the tail eigenvalues $\tilde{\lambda}$ are normalized by $\PLstart$.
+$\langle \ln \tilde{\lambda}_{\mathrm{PL}}\rangle_{\rm MLE}=1.0$ when
+the tail eigenvalues $\tilde{\lambda}_{\mathrm{PL}}$ are normalized by $\PLstart$.
 In $G_{\rm PL}$, the factor $e$ moves the mean log-ratio from $1\rightarrow 0$.
 The SETOL condition places $G_{\mathcal R}$ near $M$.
 Agreement therefore requires $G_{\rm PL}\simeq G_{\mathcal R}\simeq M$;
@@ -142,11 +142,11 @@ six learning rates $0.01$--$0.32$, and five seeds.
 The archived Frobenius convention divides
 $\lambda_i^{\rm raw}=\sigma_i(\W)^2$ by its full-spectrum mean
 $\mu_{\rm raw}=M^{-1}\sum_i\lambda_i^{\rm raw}$.
-In SETOL notation this becomes
+In SETOL coordinates this becomes
 \begin{equation}
 \lambda_i:=\frac{M}{\mu_{\rm raw}}\lambda_i^{\rm raw},
 \qquad
-\frac{\lambda_i}{M}=\frac{\lambda_i^{\rm raw}}{\mu_{\rm raw}}.
+\tilde{\lambda}_{\mathrm{ECS},i}:=\frac{\lambda_i}{M}.
 \label{eq:declared_checkpoint_conversion}
 \end{equation}
 The cutoff undergoes the same conversion.
@@ -154,7 +154,7 @@ The cutoff undergoes the same conversion.
 The fitted tail's mean-log offset tests whether its center agrees
 with the declared reference:
 \begin{equation}
-\Delta_{\rm mean-log}:=\left\langle\log\frac{\lambda}{M}\right\rangle_{\rm MLE}
+\Delta_{\rm mean-log}:=\left\langle\log\tilde{\lambda}_{\mathrm{ECS}}\right\rangle_{\rm MLE}
 =\frac{1}{\hat\alpha-1}
 -\log\frac{M}{\PLstart}.
 \label{eq:reconcile_normalization_mismatch}
@@ -168,7 +168,7 @@ the ERG rank gap shrinks to $\Delta_{ERG}\rightarrow 0$ as $\alpha \rightarrow 2
 Additional, similar results are reported in~\cite{MartinHinrichsSETOL2025}.
 
 Finally, Figure~\ref{fig:normalization_checkpoint_audit}c) shows that trace-log agreement depends on the spectral normalization.
-Dividing $\lambda_{i}$ by the full-ESD mean $\mu_{\rm raw}$
+Dividing $\lambda_{i}^{\rm raw}$ by the full-ESD mean $\mu_{\rm raw}$
 gives mean $\Delta_{\rm mean-log}=-0.0046$ and
 mean $|\Delta_{\rm mean-log}|=0.051$ for the five FC1 fits at learning rate $0.32$.
 These small offsets place the tail geometric means near the full-ESD arithmetic means.
@@ -181,8 +181,8 @@ We define the \emph{ERG rank gap} as
 \label{eq:erg_rank_gap}
 \end{equation}
 In other models, the ERG rank gap persists and can be as large as $50$.
-For nested upper tails, its sign agrees with the cutoff difference 
-$\Delta \lambda_{min}:=\PLstart-\ECSstart$ used in SETOL,
+For nested upper tails, its sign agrees with the normalized cutoff difference 
+$\Delta\tilde{\lambda}_{\min}:=\PLstart/M-\ECSstart$ used in SETOL,
 although the units differ.
 When a zero crossing exists, a positive fitted-tail log sum calls for
 adding lower modes below the reference; a negative sum calls for
