@@ -414,7 +414,7 @@ We first normalize or recale$\X$ as
 \begin{equation}
 \Tr{\X}=M
 \end{equation}.
-We call this \emph{Frobenius Rescaling}.
+We call this \emph{First-Moment Rescaling}.
 
 After rescaling, SETOL then defines a volume-preserving, scale-invariant transformation 
 on the student $\A_{\Rell}$ and teacher $\X_{\Rell}$ correlation matrices
@@ -458,364 +458,7 @@ The open question is how to formulate the full RG spectral flow, justifying the 
 %%%\vspace{-0.35em}\end{strip}
 %%%
 \clearpage
-
-\section{The self-averaging boundary}
-\label{sxn:selfavg}
-
-It is a basic principle of statistics that reliable predictions require samples that are representative of the underlying population. The simplest counterexample is estimating the mean of a heavy-tailed power-law distribution. In such a distribution, a small number of extreme observations can dominate the average, so different finite samples may have very different sample means. A more subtle example arises in complex systems near a critical point. There, even when the ensemble mean is well defined, long-range correlations can keep sample-to-sample fluctuations large, so different large samples do not necessarily become representative of one another. In statistical mechanics, these ideas are formalized by the concept of \emph{Self-Averaging}.
-\begin{tcolorbox}[
-  marginalbox,
-  title=\textbf{Self-averaging versus non-self-averaging}
-]
-Self-averaging asks if relative sample-to-sample fluctuations $\mathcal{V}_M$ disappear
-as the system grows.
-\begin{itemize}
-\item \(\mathcal{V}_M(\mathcal{O})\to0\): a bound can be formed
-\item \(\mathcal{V}_M(\mathcal{O})\not\to0\): no useful (variance) bound
-\end{itemize}
-\takeaway{The self-averaging boundary is identified here where relative fluctuations $\mathcal{V}_M$ cease to vanish.}
-\end{tcolorbox}
-
-
-Self-averaging means that a macroscopic quantity
-measured in one large sample becomes close to its average over many samples as
-the system size $M$ grows (i.e concentrates).. 
-%
-%
-%In statistical  physics,, this is frequently stated in terms of the 
-%data-averaged partition function $Z$ as
-%\begin{equation}
-%\left\langle\log\mathcal Z_M\right\rangle_{\xi_M}
-%\simeq
-%\log\left\langle\mathcal Z_M\right\rangle_{\xi_M} .
-%\end{equation}
-%This is a strong form of self-averaging; more on this below.
-%
-Let $\mathcal{O}_M$ be a macroscopic observable measured in a system
-of size $M$, and let the mean over $M$ samples $\xi_M$ be
-\begin{equation}
-\mu_M:=\mathbb{E}[\mathcal{O}_M]=\langle\mathcal{O}\rangle_{\xi_M}
-\end{equation}
-We say that $\mathcal{O}_M$ is self-averaging when it concentrates around $\mu_M$ as
-the system size grows. When the second moment is finite, its relative
-sample-to-sample variance is
-\begin{equation}
-\mathcal V_M(\mathcal O)
-:=
-\frac{\operatorname{Var}(\mathcal O_M)}
-{\left|\mathbb E[\mathcal O_M]\right|^2}
-=
-\mathbb E\!\left[
-\left|
-\frac{\mathcal O_M}{\mu_M}-1
-\right|^2
-\right].
-\label{eq:relative_variance}
-\end{equation}
-A standard sufficient test for self-averaging is
-$\mathcal{V}_M(\mathcal{O})\to0$ as $M\to\infty$. When
-$\mathcal{V}_M(\mathcal{O})$ does not vanish, relative fluctuations persist and
-different large samples can remain measurably different.
-This is \emph{Non-Self-Averaging}.
-
-\begin{figure}[!b]
-\centering
-\safeincludegraphics[width=\columnwidth]
-{figures/self_averaging_small.png}
-\caption{\textbf{Self-averaging and the failure of a shrinking bound.}
-Here $\mu_M=\mathbb{E}[\mathcal{O}_M]$. In the self-averaging case, the normalized
-observable $\mathcal{O}_M/\mu_M$ concentrates around one and the relative variance
-$\mathcal{V}_M(\mathcal{O})$ tends to zero, allowing concentration bounds to tighten.
-In the non-self-averaging case, the normalized distribution retains finite
-width and $\mathcal{V}_M(\mathcal{O})$ does not vanish, so no valid mean-centered bound
-can shrink to zero.}
-\label{fig:self_average_schematic}
-\end{figure}
-
-In NNs, non-self-averaging arises
-from two different mechanisms: localized correlation traps, and 
-long-range collective non-vanishing fluctuations.
-In either case, a model may describe its training sample well while
-performing poorly on out-of-sample test data.
-
-We propose that  the strongest learning occurs at the
-boundary between self-averaging and non-self-averaging.
-And this is not specific to NNs but a fundamental
-property of all related learning algorithms.
-
-But first, it is helpful to understand self-averaging
-from different theoretical points of view:
-Statistical Learning Theory (SLT), Statistical Mechanics (StatMech),
-and Random Matrix Theory (RMT).
-
-\subsection{Statistical Learning view}
-The connection to Statistical Learning Theory (SLT) here is qualitive; it
-is depicted in Figure~\ref{fig:self_average_schematic}.
-
-For a fixed tolerance $\epsilon>0$, consider the probability that one sample differs
-appreciably from the ensemble mean,
-\begin{equation}
-p_M(\epsilon)
-:=
-\Pr\!\left\{
-\left|
-\frac{\mathcal{O}_M}{\mu_M}-1
-\right|>
-\epsilon
-\right\}.
-\end{equation}
-A useful concentration bound has the form
-\begin{equation}
-p_M(\epsilon)\leq B_M(\epsilon),
-\qquad
-B_M(\epsilon)\longrightarrow0
-\quad\text{as}\quad M\longrightarrow\infty .
-\end{equation}
-Such a bound says that a sufficiently large sample is likely to be close to
-the ensemble mean.
-
-On the self-averaging side, the relative variance
-$\mathcal V_M(\mathcal{O})$ decreases, so the distribution narrows and the bound can
-tighten. More data or greater system size then produces a more stable and
-representative answer.
-If
-%$\liminf_{M\to\infty} V_M(O) = 0$,
-$\mathcal{V}_M(O) \to 0$
-this bound shrinks to zero for every
-fixed $\epsilon>0$ since
-\begin{equation}
-p_M(\epsilon)
-\leq
-\frac{\mathcal V_M(\mathcal O)}{\epsilon^2}.
-\label{eq:relative_chebyshev}
-\end{equation}
- A sufficiently large sample is then increasingly likely
-to lie close to the ensemble mean.
-
-On the non-self-averaging side, the relative fluctuations do not vanish
-and therefor can not gaurentee concentration.
-There is some fixed tolerance $\epsilon_0$ for which
-$\mathcal V_M(\mathcal O)$ and
-  $p_M(\epsilon_0)$  remain effectively
-nonzero as the system grows.
-Any valid bound must satisfy $p_M(\epsilon_0)\leq B_M(\epsilon_0)$
-and therefore cannot shrink to zero.
-One can form a bound  and it may still be formally true,
-but it no longer improves with width. It is flat. In practice,
-it can become vacuous. Concentration may fail. In such cases,
-one can describe in-sample data, but the bound no longer
-supports reliable out-of-sample prediction by itself.
-
-
-%The HTSR exponent $\alpha\simeq2$ is the empirical candidate for this
-%boundary. Values $\alpha<2$ and correlation traps are treated as warning
-%signals that the layer has crossed into the non-self-averaging regime.
-\clearpage
-
-\subsection{Statistical Mechanics view}
-\label{sxn:selfavg_statmech}
-
-In statistical physics, self-averaging is frequently stated in terms of the
-data-averaged partition function $\mathcal Z_M$ as
-\begin{equation}
-\left\langle\log\mathcal Z_M\right\rangle_{\xi_M}
-\simeq
-\log\left\langle\mathcal Z_M\right\rangle_{\xi_M}.
-\label{eq:selfavg_partition}
-\end{equation}
-Here $\xi_M$ labels one independently prepared sample of size $M$, and
-$\langle\cdot\rangle_{\xi_M}$ denotes an average over many such samples.
-Equation~\eqref{eq:selfavg_partition} is a strong form of self-averaging:
-a single large sample gives nearly the same free-energy contribution as the
-sample average.
-
-To expose the fluctuation correction, define
-\begin{equation}
-\delta_M
-:=
-\tfrac{
-\mathcal Z_M-\left\langle\mathcal Z_M\right\rangle_{\xi_M}
-}{
-\left\langle\mathcal Z_M\right\rangle_{\xi_M}
-},
-\qquad
-\left\langle\delta_M\right\rangle_{\xi_M}=0,
-\label{eq:relative_partition_fluctuation}
-\end{equation}
-so that
-\begin{equation}
-\mathcal V_M(\mathcal Z)
-:=
-\tfrac{
-\operatorname{Var}_{\xi_M}(\mathcal Z_M)
-}{
-\left\langle\mathcal Z_M\right\rangle_{\xi_M}^{2}
-}
-=
-\left\langle\delta_M^2\right\rangle_{\xi_M}.
-\label{eq:relative_variance_partition}
-\end{equation}
-Whenever the expansion is controlled,
-\begin{equation}
-\begin{aligned}
-\left\langle\log\mathcal Z_M\right\rangle_{\xi_M}
-&=
-\log\left\langle\mathcal Z_M\right\rangle_{\xi_M}
-+
-\left\langle\log(1+\delta_M)\right\rangle_{\xi_M}
-\\
-&=
-\log\left\langle\mathcal Z_M\right\rangle_{\xi_M}
--\tfrac12\mathcal V_M(\mathcal Z)
-+\tfrac13\left\langle\delta_M^3\right\rangle_{\xi_M}
--\cdots.
-\end{aligned}
-\label{eq:annealed_quenched_expansion}
-\end{equation}
-Thus the difference between the two sides of
-Eq.~\eqref{eq:selfavg_partition} consists of sample-to-sample fluctuation
-terms. If the relative variance and higher normalized fluctuations vanish,
-the two expressions agree to leading order. If they remain finite, one large
-sample need not represent the full collection of samples, thereby failing to generalize.
-
-\paragraph{SETOL and the Spectral Energy.}
-Section~\ref{sxn:setol} gives the corresponding effective free energy of layer quality (squared)
-generating function $\IZQ$, Eq.~\eqref{eq:setol_q_derivative}. We use this
-and ,Eq.~\eqref{eq:setol_Q} to write the
-ECS-averaged quality (squared)  $\tilde{Q}^{2}=\overline{Q^2}/M_{\Rell}$,
-now averaged over the retained ECS $\Rell$:
-\begin{equation}
-\tilde{Q}^{2}
-=
-\frac{1}{M_{\Rell}}\sum_{\tilde{\lambda}_{i}\in\Rell}G_{\Xtilde}(\tilde{\lambda}_{i}),
-\;\;
-G_{\Xtilde}(\tilde{\lambda})
-:=
-\int_{\ECSstart}^{\tilde{\lambda}}R_{\Xtilde}(z)\,\dd z,
-\label{eq:setol_spectral_functional}
-\end{equation}
-where $R_{\Xtilde}$ is the $R$-transform of the retained spectrum.
-Its local free-cumulant expansion is
-\begin{equation}
-R_{\mathbf X}(z)
-=
-\kappa^{(f)}_1
-+\kappa^{(f)}_2z
-+\kappa^{(f)}_3z^2
-+\cdots.
-\label{eq:rtransform_cumulants}
-\end{equation}
-Writing
-\begin{equation}
-m_p
-:=
-\frac{1}{M_{\Rell}}\Tr{\Xtilde_{\Rell}^{p}}
-=
-\int\tilde{\lambda}_{\Rell}^p\widehat\rho_{\Rell}(\tilde{\lambda}_{\Rell})\,\dd\tilde{\lambda}_{\Rell},
-\label{eq:spectral_moments}
-\end{equation}
-To simplify the analysis, let $\ECSstart\simeq 0$; evaluating $\hat{Q}^{2}$ gives
-\begin{equation}
-\tilde{Q}^2
-=
-\kappa^{(f)}_1m_1
-+\tfrac{1}{2}\kappa^{(f)}_2m_2
-+\tfrac{1}{3}\kappa^{(f)}_3m_3
-+\cdots 
-\label{eq:setol_moment_expansion}
-\end{equation}
-Since $\kappa^{(f)}_1=m_1$, this gives the ECS-average layer quality as
-$ \tilde{Q} \simeq  m_1$.
-The leading additive spectral quantity is then
-\begin{equation}
-\widetilde E_{\Rell}
-:=m_1
-\simeq
-\frac{1}{M_{\Rell}}\Tr{\Xtilde_{\Rell}}
-=
-\int\tilde{\lambda}_{\Rell}\widehat\rho_{\Rell}(\tilde{\lambda}_{\Rell})\,\dd\tilde{\lambda}_{\Rell}.
-\label{eq:trace_law_energy}
-\end{equation}
-Notice that we choose $\Tr{\X}=M$,
-but once we are on the gauge slice and have imposed the trace-log condition,
-$\Tr{\Xtilde_{\Rell}}\ne M$ (see~\ref{sxn:meanlog_gauge} below).
-This is the \emph{Spectral Energy}; it is the relevant macroscopic observable
-for our RG power-counting analysis.
-
-\paragraph{Ising-model analogy and the self-averaging test.}
-A similar structure appears in the Ising model. Let $\mathcal M$
-denote the total magnetization and let a field $h$ enter through
-$\mathcal H(h)=\mathcal H_0-h\mathcal M$. Then $\log\mathcal Z_M(h)$ is the
-cumulant-generating function for $\mathcal M$:
-\begin{equation}
-\log\frac{\mathcal Z_M(h)}{\mathcal Z_M(0)}
-=
-\sum_{n\geq1}
-\frac{(\beta h)^n}{n!}\,\kappa_n(\mathcal M).
-\label{eq:ising_cumulant_expansion}
-\end{equation}
-The first field-dependent term is
-$\beta h\,\kappa_1(\mathcal M)=\beta h\langle\mathcal M\rangle$, and the
-magnetization density is
-\begin{equation}
-m_M
-:=
-\frac{\langle\mathcal M\rangle_{\beta}}{M}
-=
-\frac{1}{\beta M}
-\frac{\partial}{\partial h}\log\mathcal Z_M(h).
-\label{eq:ising_magnetization_first_cumulant}
-\end{equation}
-where the brackets $\langle\rangle_{\beta}$ denote the ordinary thermal average within one fixed sample.
-Thus the total magnetization is the first
-cumulant, and $m_M$ is its leading additive density generated from the Ising
-free energy. In the same sense,
-$\widetilde E_{\Rell}=m_1$ is the first additive spectral quantity
-generated by the SETOL expansion. It is therefore the first quantity to test
-for concentration:
-\begin{equation}
-\mathcal V_{M_{\Rell}}(\widetilde E_{\Rell})
-\underset{?}{\longrightarrow} 0.
-\label{eq:energy_selfavg_condition}
-\end{equation}
-In the disordered Ising model and related random critical systems, the
-sample-to-sample relative width of the magnetization and susceptibility does
-not necessarily narrow at the critical point. Instead it can remain finite as
-the system grows, so these observables are non-self-averaging
-\cite{WisemanDomany1995,aharony1996,wiseman1998}.
-The analogy here is that if $\widetilde E_{\Rell}$ does not self-average, then the leading SETOL
-contribution already depends on the particular training sample or run.
-\paragraph{Why criticality defeats averaging.}
-The sample-to-sample fluctuations above compare independently prepared
-systems; they are not the ordinary thermal fluctuations inside one fixed
-sample. Away from criticality, the correlation length $\ell_{\rm corr}$ is
-finite, so a $d$-dimensional system of linear size $L$ contains roughly
-$(L/\ell_{\rm corr})^d$ nearly independent correlated regions, whose
-differences average away. At a disordered critical point,
-$\ell_{\rm corr}\sim L$, so the effective number of independent regions can
-remain $O(1)$. Increasing the system size then need not reduce relative
-fluctuations. This is one reason why magnetization and other singular observables can
-remain non-self-averaging at criticality.
-
-For the retained spectral energy,
-\begin{equation}
-\operatorname{Var}_{\xi_M}(\widetilde E_{\Rell})
-=
-\frac{1}{M_{\Rell}^{2}}
-\sum_{i,j\in\Rell}
-\operatorname{Cov}_{\xi_M}(\tilde{\lambda}_{\Rell,i},\tilde{\lambda}_{\Rell,j}).
-\label{eq:spectral_energy_covariance}
-\end{equation}
-If the eigenvalue contributions fluctuate nearly independently, the
-off-diagonal terms are small and the average can concentrate. If many modes
-fluctuate coherently, the covariance terms add rather than cancel, and the
-relative variance can remain finite even when the spectrum contains many
-modes. $\widetilde E_{\Rell}$ plays a similar diagnostic role as magnetization
-for critical, non-self-averaging behavior.
-
-Correlation traps, however, provide a second, different
-route to non-self-averaging, even at criticality; we discuss this in the next subsection.
-
+\input{self_averaging}
 
 \clearpage
 \subsection{Random Matrix Theory view}
@@ -1013,7 +656,7 @@ Very HT / traps & $\alpha<2$ & dominant-tail sector \\
 
 Table~\ref{tab:htsr_rg_flow} labels the HTSR phases, and Figure~\ref{fig:rg_flow_energy} shows how a layer moves through them. Training starts with many tiny-eigenvalue modes and a weak or steep tail, then retains an ECS tail and moves the ESD toward a more structured heavy-tailed spectrum.
 The spectral energy $\Ered$ from Eq.~\eqref{eq:trace_law_energy} gives this motion its learning meaning:
-for $\alpha>2$ the retained energy is weak and can collapse (orange panel),
+for $\alpha>2$ the retained energy is weak and decreases across successive spectral bands (orange panel),
 near $\alpha\simeq2$ it remains balanced across scales (green panel),
 and for $\alpha<2$ the tail modes can carry too much energy and drive the overfit regime (red panel)
 where the energy diverges.
@@ -1125,8 +768,8 @@ That is, we illustrate that $\alpha$ is analogous to an RG universal critical ex
 
 Figure~\ref{fig:rg_flow_energy} depicts the spectral RG flow for one layer.  The flow turns the ideas from Sections~\ref{sxn:htsr_rg} and~\ref{sxn:setol_rg} into a repeatable operation: decimate tiny-eigenvalue noise, retain an ECS tail, impose the SETOL ERG trace-log gauge, and compare the remaining spectral shape.  Section~\ref{sxn:htsr_rg} supplies the HTSR input: the retained ESD should approach a power-law tail, with the strongest checkpoints often near $\alpha\simeq 2$.  Section~\ref{sxn:setol_rg} supplies the SETOL input: generalization accuracy is controlled by the layer ESD through the ECS and the trace-log condition.  Section~\ref{sxn:selfavg} supplies the risk test: on the SETOL-normalized retained ECS, the retained spectral energy should self-average instead of concentrating in a few dominant tail modes.  This subsection makes that control flow operational.
 
-Figure~\ref{fig:rg_flow_energy} separates the RG step into four actions.  First, the step removes tiny-eigenvalue noise that does not contribute to the retained correlation structure.  Second, it keeps the ECS tail and represents the layer by the truncated matrix $\W_{\Rell}$.  Third, it evaluates the retained operator on the Frobenius rescaling $\Tr{\Xtilde_{\Rell}}=M$ and checks the ERG trace-log gauge.
-When the trace-log is exact, the ECS is exact.
+Figure~\ref{fig:rg_flow_energy} separates the RG step into four actions.  First, the step removes tiny-eigenvalue noise that does not contribute to the retained correlation structure.  Second, it keeps the ECS tail and represents the layer by the truncated matrix $\W_{\Rell}$.  Third, it evaluates the retained operator on the first-moment recaling for the whole ESD, and selects the ECS using $\Tr{\log \Xtilde_{\Rell}}=0$.
+When this trace-log condition is exact, the ECS is exact.
 Fourth, it tests the remaining spectral energy. The point is not to reproduce SGD or any microscopic optimizer.
 The point is to take an RG view of the training flow and  describe the learning process as a coarse-graining induced by the  optimizer trajectories
 by considering the linearized spectral view at each layer.
@@ -1144,7 +787,7 @@ The RG flow acts on retained spaces and retained operators together.  At step $(
     \label{eq:flowpair_operational_v5}
 \end{equation}
 A decimation step changes $\Rell^{(n)}$ by removing eigencomponents outside the current correlated description.
-the ECS is selected by imposing the trace-log gauge condition on the Frobenius-normalized retained correlation operator:  $\Tr{\log\Xtilde^{(n)}}=0$;
+the ECS is selected by imposing the trace-log gauge condition on the (normalized) retained correlation operator:  $\Tr{\log\Xtilde^{(n)}}=0$
 
 
 SETOL then selects the $\ECSstart$, the start of the ECS, based
@@ -1153,7 +796,7 @@ on the trace-log condition
   \sum_{\tilde{\lambda}_{\Rell}} \log \tilde{\lambda}_{\Rell} = 0,\quad\tilde{\lambda}_{\Rell}\ge\ECSstart
 \end{equation}
 At optimality the ECS starts at the PL tail, $\tilde{\lambda}^{+}_{\Rell}=\tilde{\lambda}^{+}_{\rm PL}$.
-When $\alpha<2$, the ECS can be smaller than the PL, with  $\ECSstart > PLstart$.
+When $\alpha<2$, the ECS can be smaller than the PL, with  $\ECSstart > \PLstart$.
 This indicates that a few tail eigencomponents can dominate.
 Simultaneously, the PL tail can extend deep into previous bulk region,
 indicating that the spectral fluctuations may not concentrate (as in Eq.~\ref{eq:spectral_energy_covariance}).
@@ -1213,7 +856,7 @@ RG counts gain by scale.
 \takeaway{$\alpha\simeq2$ is the log-scale-balanced boundary.}
 \end{tcolorbox}
 
-One RG step is a spectral operation in this paper. It discards eigencomponents outside the current effective description. It evaluates the retained operator on the fixed SETOL scale $\Tr{\Xtilde_{\Rell}}=M$. It then compares the retained spectral shape with the previous retained shape. A fixed point means this decimate-and-test operation no longer changes the retained spectral shape or layer-quality gain.
+One RG step is a spectral operation in this paper. It discards eigencomponents outside the current effective description. It evaluates the retained operator on the fixed SETOL scale, where $\Tr{\log \Xtilde_{\Rell}}=0$. It then compares the retained spectral shape with the previous retained shape. A fixed point means this decimate-and-test operation no longer changes the retained spectral shape or layer-quality gain.
 
 The word ``exact'' is narrow here.
 In SETOL, it refers to taking a single scale-invariant transformation, as in Eq.~\ref{eq:setol_RG_step}.
@@ -1522,7 +1165,7 @@ Eventually, however, all layer values satisfy $\alpha_\ell(t)\rightarrow 2$, aga
 
 This comparison is intentionally untuned. We made no attempt to optimize learning rates or make Muon win the MNIST benchmark.
 
-In summary, AdamW overfits very quickly, while Muon approaches the RG fixed point
+In summary, AdamW seems to overfit quickly, while Muon approaches the proposed RG fixed  point
 asymptotically slowly.  This is consistent with Muon removing the
  RG redundant scale directions, and could be associated with RG \emph{critical slowing down}.
 \clearpage
@@ -1727,7 +1370,7 @@ Layer & $\W\in\mathbb R^{N\times M}$, $N\ge M$ & Dense-layer weights. \\
 Layer & $\X=N^{-1}\W^T\W$ & Layer correlation operator. \\
 Layer & $\lambda_i>0$, $\Splus=\{i:\lambda_i>0\}$ & Positive spectral support. \\
 Layer & $\sigma(\W) = \sqrt{N\lambda(\X)}$, & Singular values of $\W$ (pre-rescaling). \\
-Layer & $\Tr{\X}=M$, & Frobenius rescaling. \\
+Layer & $\Tr{\X}=M$, & First-moment rescaling. \\
 PL tail & $\rho_{\rm tail}(\lambda)\sim\lambda^{-\alpha}$ & HTSR tail; fitted exponent $\alpha$. \\
 PL tail & $\TPL$, $\TPL^\star$ & CSN-selected PL window. \\
 ECS & $\Rell\subseteq\Splus$, $\Mred=|\Rell|$ & Retained ECS and size. \\
