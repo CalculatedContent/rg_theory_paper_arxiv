@@ -1,0 +1,1977 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[letterpaper,margin=0.68in,columnsep=0.23in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts,bm,mathtools}
+\usepackage[final]{graphicx}
+\usepackage{booktabs,array,tabularx}
+\usepackage{ragged2e}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,positioning,calc}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{cuted}
+\usepackage{placeins}
+\usepackage[hidelinks]{hyperref}
+\usepackage{stfloats} % allows two-column floats at the bottom of a page
+
+\definecolor{boxblue}{RGB}{24,73,122}
+\definecolor{boxlight}{RGB}{241,246,252}
+\definecolor{accent}{RGB}{155,35,35}
+\definecolor{grayline}{RGB}{80,80,80}
+\definecolor{boxlightblue}{RGB}{238,244,252}
+
+\usepackage{xcolor}
+\newcommand{\nred}[1]{\textcolor{red}{#1}}
+
+  
+\newcommand{\cR}{\mathcal R}
+\newcommand{\Pred}{P_{\mathrm{red}}}
+\newcommand{\Ptan}{P_{\mathrm{tan}}}
+\newcommand{\spec}{\operatorname{spec}}
+\newcommand{\so}{\mathfrak{so}}
+
+
+
+\newcommand{\WW}{\texttt{WeightWatcher}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\Trplus}{\operatorname{Tr}_{+}}
+\newcommand{\pdet}{\operatorname{pdet}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\Fzero}{\mathfrak F_0}
+\newcommand{\Ferg}{\mathfrak F_{\rm ERG}}
+\newcommand{\Opt}{\mathcal O_{\rm t}}
+\newcommand{\dd}{\,d}
+\newcommand{\W}{\mathbf W}
+\newcommand{\X}{\mathbf X}
+\newcommand{\U}{\mathbf U}
+\newcommand{\V}{\mathbf V}
+\newcommand{\Vt}{\mathbf V^{\top}}
+\newcommand{\A}{\mathbf A}
+\newcommand{\Xtilde}{\widetilde{\mathbf X}}
+\newcommand{\Atilde}{\widetilde{\mathbf A}}
+\newcommand{\Xplus}{\mathbf X_{+}}
+\newcommand{\XR}{\mathbf X_{\mathcal R}}
+\newcommand{\Rell}{\mathcal R}
+\newcommand{\RellWW}{\mathcal{R}_{WW}}
+\newcommand{\Tell}{\mathcal T}
+\newcommand{\TPL}{\mathcal T_{\rm PL}}
+\newcommand{\RECS}{\mathcal R_{\rm ECS}}
+\newcommand{\Splus}{\mathcal S^+}
+\newcommand{\rhohat}{\widehat\rho}
+\newcommand{\IZQ}{\beta\Gamma_{\overline Q^2}^{\rm IZ}}
+\newcommand{\ECSstart}{\tilde{\lambda}^{+}_{\Rell}}
+\newcommand{\PLstart}{\lambda^{+}_{\rm PL}}
+\newcommand{\MPstart}{\lambda^{+}_{\rm MP}}
+
+% Retained ECS dimension. This is a count, not a normalized quantity.
+\newcommand{\Mred}{M_{\Rell}}
+\newcommand{\Tred}{\widetilde{T}}
+\newcommand{\TredStar}{\widetilde{T}^{\star}}
+\newcommand{\Ered}{\widetilde{E}}
+\newcommand{\lambdagred}{\tilde{\lambda}_{g}}
+\newcommand{\lambdared}[1]{\tilde{\lambda}_{#1}^{(\mathcal R)}}
+
+%===DRAFT
+\usepackage{draftwatermark}
+
+%\SetWatermarkText{\sffamily\bfseries DRAFT}
+%\SetWatermarkScale{4.5}
+%\SetWatermarkColor[gray]{0.88}
+%\SetWatermarkAngle{45}
+%========
+\tcbset{
+  marginalbox/.style={
+    enhanced,
+    colback=boxlightblue,
+    colframe=boxblue,
+    colbacktitle=boxblue,
+    coltitle=white,
+    fonttitle=\bfseries\small,
+    boxrule=0.75pt,
+    arc=1.2mm,
+    left=2.0mm,
+    right=2.0mm,
+    top=1.6mm,
+    bottom=1.6mm,
+    before skip=7pt,
+    after skip=7pt,
+    before upper=\RaggedRight
+  }
+}
+\newcommand{\takeaway}[1]{%
+  \par\vspace{4pt}\noindent\textcolor{boxblue}{#1}%
+}
+\newcommand{\tagline}[1]{\textcolor{boxblue}{\bfseries #1}}
+\newcommand{\eqtight}[1]{\[\vspace{-1pt}#1\vspace{-3pt}\]}
+
+
+
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{8pt plus 1fil}
+\setlength{\@fpbot}{0pt plus 1fil}
+\setlength{\@dblfptop}{0pt}
+\setlength{\@dblfpsep}{8pt plus 1fil}
+\setlength{\@dblfpbot}{0pt plus 1fil}
+\makeatother
+\captionsetup{font=small,labelfont=bf,labelsep=period}
+\setlist[itemize]{leftmargin=1.2em,itemsep=0.15em,topsep=0.25em}
+\setlist[enumerate]{leftmargin=1.4em,itemsep=0.15em,topsep=0.25em}
+\makeatletter
+\renewenvironment{abstract}{%
+  \par\vspace{-0.85em}\noindent{\bfseries\large Abstract}\par\vspace{0.35em}%
+  \small\noindent
+}{\par\vspace{0.8em}}
+\makeatother
+
+\newcommand{\safeincludegraphics}[2][]{%
+  \IfFileExists{#2}{\includegraphics[#1]{#2}}{%
+  \fbox{\begin{minipage}[c][0.16\textheight][c]{0.92\linewidth}\centering
+  {\small Missing figure file}\par\vspace{2pt}{\small\texttt{\detokenize{#2}}}
+  \end{minipage}}}}
+
+\title{\bfseries A Spectral Renormalization-Group View of Learning}
+\author{Charles H. Martin, PhD\\
+\small Calculation Consulting, San Francisco, CA\\[-0.2em]
+\small \texttt{charles@calculationconsulting.com}}
+\date{October 28, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+  We study how the layers in deep neural networks (NNs) converge, using Wilsonian Renormalization-Group (RG) ideas to organize the spectral picture.
+  During training, these layers often develop heavy-tailed power-law (PL) spectra,
+  and the strongest checkpoints often appear near the PL exponent $\alpha\approx 2$.
+  This pattern raises a simple question: why should this value mark a good trained layer?
+  The answer is both statistical and physical.
+  The statistical answer is that $\alpha=2$ marks the boundary between stable if not optimal learning
+  and overfitting via non-self-averaging.
+  The physical answer is that the same value  makes the spectral energy gain scale evenly across
+  logarithmic spectral scales, which is the proposed Wilsonian marginal condition.
+  We then apply the ERG trace-log condition, the proposed SETOL theory, which we justify
+  by taking  volume-preserving,  scale-invariant transformations
+  to remove arbitrary layer scale along the proposed RG flow.
+   The resulting spectral RG flow connects the HTSR and SETOL theories to optimizers
+   such as Muon, and motivates a new optimizer extension, WW-PGD.
+   Together, these results point toward a spectral Renormalization-Group view of learning,
+   in which related algorithms, in NNs and even traditional machine learning (ML) algorithms,
+   may approach shared spectral structure in the settings studied here.
+\end{abstract}
+
+\section{Introduction}
+\label{sxn:intro}
+\enlargethispage{\baselineskip}
+
+\emph{Why does Deep Learning Work?} Artificial neural networks now power large language models,
+AlphaGo and AlphaFold-class systems~\cite{SilverAlphaGo2016,JumperAlphaFold2021},
+and other foundation models~\cite{BommasaniFoundationModels2021,Qwen25TechnicalReport2025,OpenAIGPTOSS2025,OpenAIGPT4TechnicalReport2023},
+yet we still lack a generally accepted theory that both explains their convergence and tells practitioners how to improve training. Modern networks optimize enormous nonconvex objectives. They memorize parts of their data. They generalize in ways that remain surprising. A theory of learning should explain this coexistence, not merely describe the loss curve.
+
+We don't have a theory of learning; we simply train until the loss stops.
+But two models can reach similar losses and still build different internal structures.
+If you just consider the loss, overfitting looks like pre-grokking memorization.
+Optimizers like Muon whiten or orthogonalize updates without understanding why it helps~\cite{JordanMuon2024}.
+These examples point to the same gap: training is not just minimizing the loss; it is motion through internal layer states.
+
+Layer convergence is the missing object. A network trains all layers together, but each dense layer changes its own weight matrix and concentrates information in its own way. Some concentration is necessary because learning compresses data into useful representations.
+Too much concentration is dangerous because a few dominant tail components can dominate the representation.
+This is part of the story. But this does not explain how finite trained layers reach correlated spectral endpoints.
+
+HTSR and SETOL provide the starting points. HTSR applies \emph{Random Matrix Theory} (RMT) to trained neural-network weight matrices.
+It posits $5+1$ phases of training by analyzing a layer's \emph{Empirical Spectral Density} (ESD) and identifying signatures of heavy-tailed (HT)
+universality classes beyond classical \emph{Marchenko--Pastur} RMT.
+Central to HTSR is the observation that the best layers develop HT spectra fit by a \emph{power law}, with exponent $\alpha \simeq 2$.
+This motivates treating $\alpha \simeq 2$ not merely as a fitted value, but as a
+spectral boundary between near optimal self-averaging behavior and overfitting due to non-self-averaging.
+
+SETOL was introduced to explain why this spectral criterion correlates with generalization. Under physically motivated approximations, SETOL expresses a trained layer's contribution to generalization solely as a functional of its empirical covariance spectrum, derived from a layer free energy written as an HCIZ integral. Thus the ESD is the relevant object: the same spectral structure that determines the HTSR exponent $\alpha$ also determines the SETOL energy functional. SETOL further suggests that the optimal regime at $\alpha = 2$ corresponds to approach toward a Wilsonian, scale-invariant, volume-preserving \emph{Exact Renormalization Group} (ERG) fixed point. In this picture, the generalizing components concentrate into a low-rank \emph{Effective Correlation Space} (ECS), whose normalized spectrum satisfies the ERG trace-log gauge-fixing constraint.
+
+Here we thread those two theories into a proposed Wilsonian RG theory of layer convergence. The NN remains a coupled system, but near convergence each layer can be viewed as approaching its own Wilsonian-style spectral fixed point. The layers must remain compatible, but they need not share one global fixed point. The explicit claims are that SETOL derives the trace-log condition, the RG map is operational, and the $\alpha\simeq2$ claim is empirical and supported by self-averaging and scale-counting arguments.
+Together, these arguments interpret the HTSR observations and give optimizer design a concrete target: move each layer toward stable correlated structure
+while preventing overfitting.
+
+\section{HTSR: phases of learning}
+\label{sxn:htsr}
+
+\begin{tcolorbox}[marginalbox,title=\textbf{HTSR heavy-tailed phases}]
+  RMT-based phenomenology of layer training.
+\eqtight{\rho_{\rm tail}(\lambda)\sim\lambda^{-\alpha}.}
+\begin{itemize}
+\item \textbf{$\alpha>2$:} stable, but the tail can be too weak.
+\item \textbf{$\alpha\simeq2$:} practical optimum for layer convergence.
+\item \textbf{$\alpha<2$:} overcorrelated / overfit
+\end{itemize}
+\takeaway{HTSR is the empirical rule: well-trained layers often sit near the $\alpha\simeq2$ boundary.}
+\end{tcolorbox}
+
+\emph{Heavy-Tailed Self-Regularization} (HTSR) is a phenomenological theory that describes the phases of training
+of a NN layer using a unique application of the Marchenko--Pastur (MP)
+Random Matrix Theory (RMT) in the heavy-tailed (HT) setting, classifying individual
+NN layers into HT/PL universality classes~\cite{MartinMahoneyJMLR2021}.
+
+The starting point is a single layer.
+Write the weight matrix as $\W\in\mathbb R^{N\times M}$, with $N\ge M$, and define
+\begin{equation}
+\X=\frac{1}{N}\W^T\W.
+\label{eq:Xdef}
+\end{equation}
+The operator $\X$ is the layer's weight-correlation operator. Its eigenvectors give input directions in the layer. Its eigenvalues give the spectral quality gain assigned to those eigen-directions. Importantly, HTSR recognizes the elements $\W_{i,j}$ should not be strongly heavy-tailed, whereas
+the eigenvalues $\lambda$ of $\X$ are as this is a signature of a strongly correlated system near criticality.
+
+HTSR works by fitting the layer ESD to a finite-window power law, where
+the exponent $\alpha$ places the layer in an RMT/HT universality class.
+Empirically, strong trained layers often approach the optimal state
+$\alpha \simeq 2$.
+Section~\ref{sxn:selfavg} explains why 
+this boundary is optimal for learning using statistical/statistical mechanics
+arguments.
+
+The empirical premise comes from observations on hundreds of well-trained models and thousands of layers, using the open-source \WW{} tool~\cite{WeightWatcherTool}. \WW{} implements a practical version of the HTSR (and SETOL) diagnostics, and makes these diagnostics reproducible and empirically testable
+and/or falsifiable.
+
+In many well-trained models, the layers have an ESD with a finite-window tail, starting at $\PLstart$, that can be
+well fit to a power law (PL):
+\begin{equation}
+\rho(\lambda)\sim\lambda^{-\alpha},\quad\lambda\ge\PLstart
+\label{eq:rho_tail}
+\end{equation}
+HTSR uses this tail, together with related power-law metrics, as a data-free diagnostic of learned correlation structure \cite{MartinMahoneyICML2019,MartinMahoneyJMLR2021,MartinPengMahoney2021}. In practice, the power-law exponent is estimated with the standard Clauset--Shalizi--Newman maximum-likelihood fit
+which finds the best $\PLstart$, 
+as implemented in the open-source WeightWatcher tool \cite{WeightWatcherTool,Clauset2009}.
+The observed optimum is not simply the smallest exponent. Strong checkpoints often sit near
+\begin{equation}
+\alpha\simeq2.
+\label{eq:alphaobs}
+\end{equation}
+Figure~\ref{fig:spectral} shows a representative fitted spectrum.
+
+\begin{figure}[t]
+\centering
+\safeincludegraphics[width=\columnwidth]{figures/fig1_panels.png}
+\caption{Empirical Spectral Density (ESD) of a well-trained dense layer. Panel (a) shows the ESD of $\X=N^{-1}\W^T\W$ in log-log coordinates. The tail is fit by a finite-window MLE/KS power law with $\alpha\simeq2$. Panel (b) shows the trace-log-normalized ECS, where $\Tr\log\Xtilde_{\Rell}\simeq0$
+  ($\Rell$ denotes the ECS space).  The red and purple vertical lines denote the PL tail, $\tilde{\lambda}^{+}_{\rm PL}$, and the ECS,
+  $\tilde{\lambda}^{+}_{\Rell}$, resp.
+  Plots have been generated using the open-source~\WW~tool.\cite{WeightWatcherTool}}
+\label{fig:spectral}
+\vspace{-0.5em}
+\end{figure}
+
+The diagnostic is practical. The open-source \WW{} tool estimates the layerwise HTSR PL exponents $\alpha$ from trained weights alone. One can obtain PL fits for both linear and convolutional layers (see \cite{MartinMahoney2020SDM}).
+Prior work showed that these data-free spectral metrics can predict model-quality trends without access to training or testing data \cite{MartinPengMahoney2021}. Figure~\ref{fig:alpha_histograms} shows recent example scans for the OpenAI GPT-OSS 20B and 120B models~\cite{OpenAIGPT4TechnicalReport2023}, and the instruct component $(\W:=\W_{\rm instruct}-\W{\rm base})$~of the Qwen2.5 instruct models.
+Each histogram summarizes fitted layerwise $\alpha$ values across all layer weight matrices.
+
+
+HTSR is phenomenological. It extends the familiar Marchenko-Pastur (MP)  Random Matrix Theory (RMT) in a unique way to the layer weight matrices to classify them into several distinct heavy-tailed (HT) universality classes.
+HT RMT was first noted in the theoretical physics literature in the 1990s that when a random matrix is heavy-tailed power-law (HT-PL) elementwise, the ESDs no longer follow the MP law and themselves become HT-PL and fall into different universality classes~\cite{CizeauBouchaud1994,PottersBouchaud2020}. HTSR generalized this, and noted that when ESDs themselves are HT-PL, they fall into different universality classes even when the underlying matrix is not HT-PL elementwise.  Moreover, HTSR notes that  $\alpha\simeq 2.0$ is special, and corresponds to a candidate optimal state of the layer. Roughly, then, for our purposes here, we can reduce the $5+1$ HTSR classes into three phases: $\alpha>2.0$,  $\alpha\simeq 2.0$, and  $\alpha< 2.0$.
+
+Still, HTSR is phenomenological. The central question here seeks a more precise but also simple answer: why does $\alpha\simeq 2.0$ correspond to an optimal trained layer with a stable HT-PL empirical spectral density?
+
+Here, we develop an RG argument for  $\alpha\simeq 2.0$ that is a posteriori consistent with HTSR (and SETOL), but goes further by integrating HTSR and SETOL; there are two main arguments. First, $\alpha=2$ is the boundary where generalization is  supported by the
+maximum number of eigencomponents
+before overfitting.
+Second, $\alpha=2$ is what is called marginal in Wilsonian Renormalization Group.
+But first, to formulate the RG theory, we need to understand its motivation in the SETOL approach.
+
+\begin{figure}[b]
+\centering
+\includegraphics[width=0.48\columnwidth]{figures/oss_alpha_histogram.png}\hfill
+\includegraphics[width=0.48\columnwidth]{figures/qwen25_instruct_alpha_histogram.png}
+\caption{Layerwise HTSR $\alpha$ histograms from linear layers, computed with the open-source \WW{} tool. Left: GPT-OSS 20B/120B models. Right: Qwen2.5 instruct models. The warning bands are heuristic: small $\alpha$ marks overfit or trap risk, while large $\alpha$ marks weakly correlated or underfit tails. Optimizer notebook details are listed in Appendix~\ref{app:optimizer_experiments}.}
+\label{fig:alpha_histograms}
+\vspace{-0.6em}
+\end{figure}
+
+\section{SETOL: the Wilsonian ERG }
+\label{sxn:setol}
+\enlargethispage{1.5\baselineskip}
+
+%\begin{tcolorbox}[marginalbox,title=\textbf{2. Phase-map summary}]
+%The best NN layers align the HTSR $\alpha=2$ with the SETOL trace-log law and ECS.
+%\begin{itemize}
+%\item HTSR identifies the power-law tail with $\alpha=2$.
+%\item SETOL identifies the ERG trace-log condition
+%\item Strong checkpoints make the two windows align.
+%\item Overfitting appears as traps or $\alpha<2$.
+%\end{itemize}
+%\takeaway{This alignment is a proposed RG signature.}
+%\end{tcolorbox}
+
+SETOL is a \emph{Semi-Empirical Theory of Learning}.
+It connects the layer empirical spectral density (ESD) to multilayer neural-network generalization accuracy using statistical mechanics,
+providing a rigorous foundation\footnote{At a physics level of rigor.} for HTSR.
+It is semi-empirical because it takes the layer ESD as empirical input and derives a layer-quality functional
+whose diagnostics can be associated with the HTSR PL metric $\alpha$.
+In doing so, it assumes that a NN, near the optimal state of learning, satisfies a volume-preserving, scale-invariant transformation
+(the trace-log condition) that resembles taking a single step of the Wilsonian Exact Renormalization Group (ERG)~\cite{WilsonKogut1974,Polchinski1984}.
+
+
+SETOL starts by approximating the average generalization accuracy (one minus the error) of a model,
+which it calls the average model \emph{Quality} $\overline Q_{\rm NN}$. 
+\begin{equation}
+\overline Q_{\rm NN}\simeq 1-\overline E_{\rm gen}^{\rm NN}.
+\label{eq:setol_quality}
+\end{equation}
+(where the average is over all data samples).
+For a multilayer model, SETOL then approximates total model average quality by a product of layer contributions,
+\begin{equation}
+\overline Q_{\rm NN}\simeq\prod_{\rm layers}\overline Q_\ell .
+\label{eq:setol_layer_product}
+\end{equation}
+Thus a layer quality $\overline Q:=\overline Q_\ell$ estimates how much each layer supports the model's generalization accuracy.
+
+Layer quality has a simple meaning here. It is one layer's contribution to generalization accuracy. A useful layer lowers error. A bad layer adds unstable gain or loses useful capacity.
+This is the practical meaning of ``layer quality'' throughout the paper.
+
+SETOL derives the layer quality using the layer-quality (squared) generating function,
+\begin{equation}
+\begin{aligned}
+\overline Q^{\,2}
+&=\frac{1}{\beta}\frac{\partial}{\partial n}
+  \left[\lim_{N\gg1}\IZQ\right] \\
+&\simeq_{\rm high\text{-}T}
+  \frac{1}{n}\frac{\partial}{\partial\beta}
+  \left[\lim_{N\gg1}\IZQ\right] .
+\end{aligned}
+\label{eq:setol_q_derivative}
+\end{equation}
+Here $n$ is the sample count, and $\beta$ is the inverse-temperature parameter.
+This is evaluated in the thermodynamic large-$n$ (and large-$N$) limit.
+This generating function $\IZQ$ is essentially an effective layer free energy.
+
+SETOL models each trained layer using a matrix generalization of the classical student--teacher perceptron~\cite{SeungSompolinskyTishby1992} to matrices.
+The trained weight matrix plays the role of the fixed teacher, $\mathbf T=\mathbf W$, while $\mathbf S$ denotes a possible student matrix that reproduces the teacher-layer outputs.
+SETOL then generalizes the ST perceptron free energy in terms of the student correlation operator $\widetilde{\mathbf A}$. The compatible matrices $\widetilde{\mathbf A}_N$ and $\widetilde{\mathbf A}_M$ denote the induced $N\times N$ and $M\times M$ forms of this operator, restricted to the Effective Correlation Space (ECS). In an annealed, high-temperature approximation, the resulting effective free energy,
+or quality (squared) generating function $\IZQ$, takes the form of a random matrix (HCIZ) integral
+\begin{equation}
+\begin{aligned}
+\IZQ
+&=\frac{1}{N}\log\int d\mu(\widetilde{\mathbf A})
+   \exp\{N\mathcal S(\widetilde{\mathbf A})\},\\
+\mathcal S(\widetilde{\mathbf A})
+&=n\beta\,\Tr\!\left[
+   \frac{1}{N}\mathbf T^T\widetilde{\mathbf A}_{N}\mathbf T
+   \right]
+   +\frac{1}{2}\Tr\log(\widetilde{\mathbf A}_{M}) .
+\end{aligned}
+\label{eq:setol_hciz}
+\end{equation}
+The first term measures teacher--student alignment: it favors student correlations that match the trained teacher layer. The second term is the log-volume contribution that appears when the theory changes variables from weights to correlations. In the thermodynamic limit, and under the SETOL RG ansatz, this free energy depends only on the empirical spectral density of the teacher covariance.
+Thus the layer's contribution to generalization accuracy reduces to a functional of the trained weight matrix's ESD.
+
+\begin{tcolorbox}[marginalbox,title=\textbf{SETOL free energy and ERG trace-log}]
+  Matrix-generalized statistical mechanics student-teacher model of NN generalization accuracy:
+  \eqtight{
+       1-\overline E_{\rm gen}^{\rm NN}\simeq
+     \overline Q_{\rm NN}\simeq\prod_\ell \overline Q_\ell}
+\begin{itemize}
+\item \textbf{Layer Quality $\overline Q_\ell$:} one layer's contribution to total accuracy (1-error). Depends simply on $\X$.
+\item \textbf{Effective Free Energy} $\IZQ$ estimates $\overline Q_\ell$ with a random-matrix HCIZ integral
+  \item \textbf{Gauge fixing:} remove volume drift with
+\eqtight{
+  \Tr\log\Xtilde_{R}=0
+  \qquad\Longleftrightarrow\qquad
+  \det\Xtilde_{R}=1 .
+}
+\end{itemize}
+\takeaway{SETOL says: relate the HTSR power-law $\alpha$ to the generalization accuracy by evaluating $\IZQ$}
+\end{tcolorbox}
+
+
+\begin{figure*}[t]
+\centering
+\safeincludegraphics[width=0.98\textwidth]{figures/fig3_spectral_flow.png}
+\caption{
+HTSR/SETOL phases during training. 
+The HTSR power-law tail $\mathcal T_{\rm PL}$ and the SETOL Effective Correlation Space $\Rell_{\rm ECS}$ are selected independently.
+During training, they overlap. At convergence, they align
+$\Rell_{\rm ECS}^{\star}\simeq \mathcal T_{\rm PL}^{\star}$, at $\alpha\simeq2$.
+}
+\label{fig:spectral_flow_schematic}
+\end{figure*}
+
+The Wilsonian ERG step in SETOL is a change of variables and a change of scale. The bare layer variables are the student weights. The effective variables are the retained correlation modes in $\Atilde_{\Rell}$. The SETOL paper describes this step as an Effective-Hamiltonian construction: a bare layer Hamiltonian for $\overline Q^2$ is rewritten as a renormalized effective Hamiltonian on the ECS \cite{MartinHinrichsSETOL2025}.
+\begin{equation}
+ d\mu(\mathbf S)\,e^{n\beta N\Tr\mathcal H_{\overline Q^2}}
+ \ \xrightarrow{\rm ERG}\
+ d\mu(\widetilde{\mathbf A})\,
+ e^{n\beta N\Tr\mathcal H_{\overline Q^2}^{\rm ECS}} .
+ \label{eq:setol_RG_step}
+\end{equation}
+The arrow here is a scale-invariant, volume-preserving transformation, and is
+effectively taking a single step of the Wilsonian Exact RG (ERG).
+It is from this convenient construction that the ERG trace-log condition emerges.
+Here, the optimal ECS flow should approach a stable scale-balanced state near $\alpha\simeq2$.
+
+%For this work, which considers the learning dynamics under a more complete RG lens,
+%the ERG trace-log condition removes volume drift while retaining scale.
+
+We first normalize or recale$\X$ as
+\begin{equation}
+\Tr{\X}=M
+\end{equation}.
+We call this \emph{Frobenius Rescaling}.
+
+After rescaling, SETOL then defines a volume-preserving, scale-invariant transformation 
+on the student $\A_{\Rell}$ and teacher $\X_{\Rell}$ correlation matrices
+\begin{equation}
+\Tr\log\widetilde{\mathbf A}_{\Rell}=0 \leftrightarrow \Tr\log\Xtilde_{\Rell}\simeq0 .
+\label{eq:setol_trlog_AX}
+\end{equation}.
+where the tilde denotes that this trace-log condutions holds.
+(i.e. $\Xtilde_{\Rell},\ECSstart, \tilde{\lambda}$),
+This is also called \emph{gauge Fixing}, and we may say we are now on the \emph{Gauge Slice}.
+%We may drop $\Rell$ on $\Xtilde$ or $\tilde{\lambda}$ if the retained ECS is clear.
+
+The layer quality (squared) is now expressed
+simply in terms of the tail of the ``teacher'' ESD 
+using the integrated R-Transform $R_{\Xtilde}(z)$~\cite{Zee1996}:
+\begin{equation}
+\overline{Q}^{2}
+=
+\sum_{\tilde{\lambda}_{i}\in\Rell}
+\int_{\ECSstart}^{\tilde{\lambda}_{i}}
+R_{\Xtilde}(z)\, dz
+\label{eq:setol_Q}
+\end{equation}
+where $R_{\Xtilde}(z)$ is an analytic function chosen to model the PL tail
+(and is analogous to a renormalized self-energy)
+and $\ECSstart$ is the start of the ECS.
+This result shows that the layer quality depends only on the ESD
+(as in HTSR).
+
+The link between HTSR and SETOL is summarized in Figure~\ref{fig:spectral_flow_schematic}, which should be read as a schematic spectral flow rather than as a static taxonomy. The red vertical line marks the start of the HTSR power-law tail, $\TPL$, selected by the MLE fit, while the purple vertical line marks the start of the SETOL Effective Correlation Space, $\RECS$, selected by the ERG trace-log condition.  Training (usually) begins in a Gaussian/Marchenko--Pastur regime where neither boundary is stable, then a weak heavy-tail forms, correlated learning develops, and the SETOL ECS boundary and HTSR PL-tail boundary move toward one another. At the convergence point, $\alpha \simeq 2$ and $\Tr\log\Xtilde_{\Rell}=0$; the two selected regions then align, $\Rell_{\rm ECS}^{*} \simeq \mathcal T_{\rm PL}^{*}$, equivalently $\tilde{\lambda}^{+}_{\Rell}-\tilde{\lambda}^{+}_{\rm PL}\simeq 0$. Empirically, this is also the regime in which the truncated-SVD approximation, restricted to the ECS, preserves test/generalization accuracy. The red lower panels show the two failure modes beyond this boundary: a correlation trap, where isolated rank-one perturbations in $\W$ distort the ESD and induce overfitting, and a very-heavy-tailed regime, where $\alpha < 2$ and the system  becomes strongly (over) correlated and also overfits. At the boundary is optimal learning and generalization.
+
+SETOL suggests that the best layers in a very well trained model sit at a Wilsonian Exact RG fixed point.
+The open question is how to formulate the full RG spectral flow, justifying the trace-log condition and  $\alpha=2$ as optimal.
+
+
+%%%\begin{strip}\vspace{-0.35em}
+%%%\centering
+%%%\safeincludegraphics[width=0.98\textwidth]{figures/fig3_spectral_flow.png}
+%%%\captionof{figure}{Schematic spectral flow for HTSR/SETOL training and overfitting. The Gaussian branch begins with a Marchenko--Pastur-like spectrum and no fitted power-law tail. Training then moves the layer through weakly and moderately heavy-tailed regimes. Red dashed lines mark the MLE/KS power law cutoff. Purple dashed lines mark the trace-log ECS cutoff. Strong checkpoints occur when the cutoffs nearly align near $\alpha\simeq2$. Overfitting can appear through correlation traps or by crossing into the very-heavy-tailed $\alpha<2$ regime.}
+%%%\label{fig:spectral_flow_schematic}
+%%%\vspace{-0.35em}\end{strip}
+%%%
+\clearpage
+
+\section{The self-averaging boundary}
+\label{sxn:selfavg}
+
+It is a basic principle of statistics that reliable predictions require samples that are representative of the underlying population. The simplest counterexample is estimating the mean of a heavy-tailed power-law distribution. In such a distribution, a small number of extreme observations can dominate the average, so different finite samples may have very different sample means. A more subtle example arises in complex systems near a critical point. There, even when the ensemble mean is well defined, long-range correlations can keep sample-to-sample fluctuations large, so different large samples do not necessarily become representative of one another. In statistical mechanics, these ideas are formalized by the concept of \emph{Self-Averaging}.
+\begin{tcolorbox}[
+  marginalbox,
+  title=\textbf{Self-averaging versus non-self-averaging}
+]
+Self-averaging asks if relative sample-to-sample fluctuations $\mathcal{V}_M$ disappear
+as the system grows.
+\begin{itemize}
+\item \(\mathcal{V}_M(\mathcal{O})\to0\): a bound can be formed
+\item \(\mathcal{V}_M(\mathcal{O})\not\to0\): no useful (variance) bound
+\end{itemize}
+\takeaway{The self-averaging boundary is identified here where relative fluctuations $\mathcal{V}_M$ cease to vanish.}
+\end{tcolorbox}
+
+
+Self-averaging means that a macroscopic quantity
+measured in one large sample becomes close to its average over many samples as
+the system size $M$ grows (i.e concentrates).. 
+%
+%
+%In statistical  physics,, this is frequently stated in terms of the 
+%data-averaged partition function $Z$ as
+%\begin{equation}
+%\left\langle\log\mathcal Z_M\right\rangle_{\xi_M}
+%\simeq
+%\log\left\langle\mathcal Z_M\right\rangle_{\xi_M} .
+%\end{equation}
+%This is a strong form of self-averaging; more on this below.
+%
+Let $\mathcal{O}_M$ be a macroscopic observable measured in a system
+of size $M$, and let the mean over $M$ samples $\xi_M$ be
+\begin{equation}
+\mu_M:=\mathbb{E}[\mathcal{O}_M]=\langle\mathcal{O}\rangle_{\xi_M}
+\end{equation}
+We say that $\mathcal{O}_M$ is self-averaging when it concentrates around $\mu_M$ as
+the system size grows. When the second moment is finite, its relative
+sample-to-sample variance is
+\begin{equation}
+\mathcal V_M(\mathcal O)
+:=
+\frac{\operatorname{Var}(\mathcal O_M)}
+{\left|\mathbb E[\mathcal O_M]\right|^2}
+=
+\mathbb E\!\left[
+\left|
+\frac{\mathcal O_M}{\mu_M}-1
+\right|^2
+\right].
+\label{eq:relative_variance}
+\end{equation}
+A standard sufficient test for self-averaging is
+$\mathcal{V}_M(\mathcal{O})\to0$ as $M\to\infty$. When
+$\mathcal{V}_M(\mathcal{O})$ does not vanish, relative fluctuations persist and
+different large samples can remain measurably different.
+This is \emph{Non-Self-Averaging}.
+
+\begin{figure}[!b]
+\centering
+\safeincludegraphics[width=\columnwidth]
+{figures/self_averaging_small.png}
+\caption{\textbf{Self-averaging and the failure of a shrinking bound.}
+Here $\mu_M=\mathbb{E}[\mathcal{O}_M]$. In the self-averaging case, the normalized
+observable $\mathcal{O}_M/\mu_M$ concentrates around one and the relative variance
+$\mathcal{V}_M(\mathcal{O})$ tends to zero, allowing concentration bounds to tighten.
+In the non-self-averaging case, the normalized distribution retains finite
+width and $\mathcal{V}_M(\mathcal{O})$ does not vanish, so no valid mean-centered bound
+can shrink to zero.}
+\label{fig:self_average_schematic}
+\end{figure}
+
+In NNs, non-self-averaging arises
+from two different mechanisms: localized correlation traps, and 
+long-range collective non-vanishing fluctuations.
+In either case, a model may describe its training sample well while
+performing poorly on out-of-sample test data.
+
+We propose that  the strongest learning occurs at the
+boundary between self-averaging and non-self-averaging.
+And this is not specific to NNs but a fundamental
+property of all related learning algorithms.
+
+But first, it is helpful to understand self-averaging
+from different theoretical points of view:
+Statistical Learning Theory (SLT), Statistical Mechanics (StatMech),
+and Random Matrix Theory (RMT).
+
+\subsection{Statistical Learning view}
+The connection to Statistical Learning Theory (SLT) here is qualitive; it
+is depicted in Figure~\ref{fig:self_average_schematic}.
+
+For a fixed tolerance $\epsilon>0$, consider the probability that one sample differs
+appreciably from the ensemble mean,
+\begin{equation}
+p_M(\epsilon)
+:=
+\Pr\!\left\{
+\left|
+\frac{\mathcal{O}_M}{\mu_M}-1
+\right|>
+\epsilon
+\right\}.
+\end{equation}
+A useful concentration bound has the form
+\begin{equation}
+p_M(\epsilon)\leq B_M(\epsilon),
+\qquad
+B_M(\epsilon)\longrightarrow0
+\quad\text{as}\quad M\longrightarrow\infty .
+\end{equation}
+Such a bound says that a sufficiently large sample is likely to be close to
+the ensemble mean.
+
+On the self-averaging side, the relative variance
+$\mathcal V_M(\mathcal{O})$ decreases, so the distribution narrows and the bound can
+tighten. More data or greater system size then produces a more stable and
+representative answer.
+If
+%$\liminf_{M\to\infty} V_M(O) = 0$,
+$\mathcal{V}_M(O) \to 0$
+this bound shrinks to zero for every
+fixed $\epsilon>0$ since
+\begin{equation}
+p_M(\epsilon)
+\leq
+\frac{\mathcal V_M(\mathcal O)}{\epsilon^2}.
+\label{eq:relative_chebyshev}
+\end{equation}
+ A sufficiently large sample is then increasingly likely
+to lie close to the ensemble mean.
+
+On the non-self-averaging side, the relative fluctuations do not vanish
+and therefor can not gaurentee concentration.
+There is some fixed tolerance $\epsilon_0$ for which
+$\mathcal V_M(\mathcal O)$ and
+  $p_M(\epsilon_0)$  remain effectively
+nonzero as the system grows.
+Any valid bound must satisfy $p_M(\epsilon_0)\leq B_M(\epsilon_0)$
+and therefore cannot shrink to zero.
+One can form a bound  and it may still be formally true,
+but it no longer improves with width. It is flat. In practice,
+it can become vacuous. Concentration may fail. In such cases,
+one can describe in-sample data, but the bound no longer
+supports reliable out-of-sample prediction by itself.
+
+
+%The HTSR exponent $\alpha\simeq2$ is the empirical candidate for this
+%boundary. Values $\alpha<2$ and correlation traps are treated as warning
+%signals that the layer has crossed into the non-self-averaging regime.
+\clearpage
+
+\subsection{Statistical Mechanics view}
+\label{sxn:selfavg_statmech}
+
+In statistical physics, self-averaging is frequently stated in terms of the
+data-averaged partition function $\mathcal Z_M$ as
+\begin{equation}
+\left\langle\log\mathcal Z_M\right\rangle_{\xi_M}
+\simeq
+\log\left\langle\mathcal Z_M\right\rangle_{\xi_M}.
+\label{eq:selfavg_partition}
+\end{equation}
+Here $\xi_M$ labels one independently prepared sample of size $M$, and
+$\langle\cdot\rangle_{\xi_M}$ denotes an average over many such samples.
+Equation~\eqref{eq:selfavg_partition} is a strong form of self-averaging:
+a single large sample gives nearly the same free-energy contribution as the
+sample average.
+
+To expose the fluctuation correction, define
+\begin{equation}
+\delta_M
+:=
+\tfrac{
+\mathcal Z_M-\left\langle\mathcal Z_M\right\rangle_{\xi_M}
+}{
+\left\langle\mathcal Z_M\right\rangle_{\xi_M}
+},
+\qquad
+\left\langle\delta_M\right\rangle_{\xi_M}=0,
+\label{eq:relative_partition_fluctuation}
+\end{equation}
+so that
+\begin{equation}
+\mathcal V_M(\mathcal Z)
+:=
+\tfrac{
+\operatorname{Var}_{\xi_M}(\mathcal Z_M)
+}{
+\left\langle\mathcal Z_M\right\rangle_{\xi_M}^{2}
+}
+=
+\left\langle\delta_M^2\right\rangle_{\xi_M}.
+\label{eq:relative_variance_partition}
+\end{equation}
+Whenever the expansion is controlled,
+\begin{equation}
+\begin{aligned}
+\left\langle\log\mathcal Z_M\right\rangle_{\xi_M}
+&=
+\log\left\langle\mathcal Z_M\right\rangle_{\xi_M}
++
+\left\langle\log(1+\delta_M)\right\rangle_{\xi_M}
+\\
+&=
+\log\left\langle\mathcal Z_M\right\rangle_{\xi_M}
+-\tfrac12\mathcal V_M(\mathcal Z)
++\tfrac13\left\langle\delta_M^3\right\rangle_{\xi_M}
+-\cdots.
+\end{aligned}
+\label{eq:annealed_quenched_expansion}
+\end{equation}
+Thus the difference between the two sides of
+Eq.~\eqref{eq:selfavg_partition} consists of sample-to-sample fluctuation
+terms. If the relative variance and higher normalized fluctuations vanish,
+the two expressions agree to leading order. If they remain finite, one large
+sample need not represent the full collection of samples, thereby failing to generalize.
+
+\paragraph{SETOL and the Spectral Energy.}
+Section~\ref{sxn:setol} gives the corresponding effective free energy of layer quality (squared)
+generating function $\IZQ$, Eq.~\eqref{eq:setol_q_derivative}. We use this
+and ,Eq.~\eqref{eq:setol_Q} to write the
+ECS-averaged quality (squared)  $\tilde{Q}^{2}=\overline{Q^2}/M_{\Rell}$,
+now averaged over the retained ECS $\Rell$:
+\begin{equation}
+\tilde{Q}^{2}
+=
+\frac{1}{M_{\Rell}}\sum_{\tilde{\lambda}_{i}\in\Rell}G_{\Xtilde}(\tilde{\lambda}_{i}),
+\;\;
+G_{\Xtilde}(\tilde{\lambda})
+:=
+\int_{\ECSstart}^{\tilde{\lambda}}R_{\Xtilde}(z)\,\dd z,
+\label{eq:setol_spectral_functional}
+\end{equation}
+where $R_{\Xtilde}$ is the $R$-transform of the retained spectrum.
+Its local free-cumulant expansion is
+\begin{equation}
+R_{\mathbf X}(z)
+=
+\kappa^{(f)}_1
++\kappa^{(f)}_2z
++\kappa^{(f)}_3z^2
++\cdots.
+\label{eq:rtransform_cumulants}
+\end{equation}
+Writing
+\begin{equation}
+m_p
+:=
+\frac{1}{M_{\Rell}}\Tr{\Xtilde_{\Rell}^{p}}
+=
+\int\tilde{\lambda}_{\Rell}^p\widehat\rho_{\Rell}(\tilde{\lambda}_{\Rell})\,\dd\tilde{\lambda}_{\Rell},
+\label{eq:spectral_moments}
+\end{equation}
+To simplify the analysis, let $\ECSstart\simeq 0$; evaluating $\hat{Q}^{2}$ gives
+\begin{equation}
+\tilde{Q}^2
+=
+\kappa^{(f)}_1m_1
++\tfrac{1}{2}\kappa^{(f)}_2m_2
++\tfrac{1}{3}\kappa^{(f)}_3m_3
++\cdots 
+\label{eq:setol_moment_expansion}
+\end{equation}
+Since $\kappa^{(f)}_1=m_1$, this gives the ECS-average layer quality as
+$ \tilde{Q} \simeq  m_1$.
+The leading additive spectral quantity is then
+\begin{equation}
+\widetilde E_{\Rell}
+:=m_1
+\simeq
+\frac{1}{M_{\Rell}}\Tr{\Xtilde_{\Rell}}
+=
+\int\tilde{\lambda}_{\Rell}\widehat\rho_{\Rell}(\tilde{\lambda}_{\Rell})\,\dd\tilde{\lambda}_{\Rell}.
+\label{eq:trace_law_energy}
+\end{equation}
+Notice that we choose $\Tr{\X}=M$,
+but once we are on the gauge slice and have imposed the trace-log condition,
+$\Tr{\Xtilde_{\Rell}}\ne M$ (see~\ref{sxn:meanlog_gauge} below).
+This is the \emph{Spectral Energy}; it is the relevant macroscopic observable
+for our RG power-counting analysis.
+
+\paragraph{Ising-model analogy and the self-averaging test.}
+A similar structure appears in the Ising model. Let $\mathcal M$
+denote the total magnetization and let a field $h$ enter through
+$\mathcal H(h)=\mathcal H_0-h\mathcal M$. Then $\log\mathcal Z_M(h)$ is the
+cumulant-generating function for $\mathcal M$:
+\begin{equation}
+\log\frac{\mathcal Z_M(h)}{\mathcal Z_M(0)}
+=
+\sum_{n\geq1}
+\frac{(\beta h)^n}{n!}\,\kappa_n(\mathcal M).
+\label{eq:ising_cumulant_expansion}
+\end{equation}
+The first field-dependent term is
+$\beta h\,\kappa_1(\mathcal M)=\beta h\langle\mathcal M\rangle$, and the
+magnetization density is
+\begin{equation}
+m_M
+:=
+\frac{\langle\mathcal M\rangle_{\beta}}{M}
+=
+\frac{1}{\beta M}
+\frac{\partial}{\partial h}\log\mathcal Z_M(h).
+\label{eq:ising_magnetization_first_cumulant}
+\end{equation}
+where the brackets $\langle\rangle_{\beta}$ denote the ordinary thermal average within one fixed sample.
+Thus the total magnetization is the first
+cumulant, and $m_M$ is its leading additive density generated from the Ising
+free energy. In the same sense,
+$\widetilde E_{\Rell}=m_1$ is the first additive spectral quantity
+generated by the SETOL expansion. It is therefore the first quantity to test
+for concentration:
+\begin{equation}
+\mathcal V_{M_{\Rell}}(\widetilde E_{\Rell})
+\underset{?}{\longrightarrow} 0.
+\label{eq:energy_selfavg_condition}
+\end{equation}
+In the disordered Ising model and related random critical systems, the
+sample-to-sample relative width of the magnetization and susceptibility does
+not necessarily narrow at the critical point. Instead it can remain finite as
+the system grows, so these observables are non-self-averaging
+\cite{WisemanDomany1995,aharony1996,wiseman1998}.
+The analogy here is that if $\widetilde E_{\Rell}$ does not self-average, then the leading SETOL
+contribution already depends on the particular training sample or run.
+\paragraph{Why criticality defeats averaging.}
+The sample-to-sample fluctuations above compare independently prepared
+systems; they are not the ordinary thermal fluctuations inside one fixed
+sample. Away from criticality, the correlation length $\ell_{\rm corr}$ is
+finite, so a $d$-dimensional system of linear size $L$ contains roughly
+$(L/\ell_{\rm corr})^d$ nearly independent correlated regions, whose
+differences average away. At a disordered critical point,
+$\ell_{\rm corr}\sim L$, so the effective number of independent regions can
+remain $O(1)$. Increasing the system size then need not reduce relative
+fluctuations. This is one reason why magnetization and other singular observables can
+remain non-self-averaging at criticality.
+
+For the retained spectral energy,
+\begin{equation}
+\operatorname{Var}_{\xi_M}(\widetilde E_{\Rell})
+=
+\frac{1}{M_{\Rell}^{2}}
+\sum_{i,j\in\Rell}
+\operatorname{Cov}_{\xi_M}(\tilde{\lambda}_{\Rell,i},\tilde{\lambda}_{\Rell,j}).
+\label{eq:spectral_energy_covariance}
+\end{equation}
+If the eigenvalue contributions fluctuate nearly independently, the
+off-diagonal terms are small and the average can concentrate. If many modes
+fluctuate coherently, the covariance terms add rather than cancel, and the
+relative variance can remain finite even when the spectrum contains many
+modes. $\widetilde E_{\Rell}$ plays a similar diagnostic role as magnetization
+for critical, non-self-averaging behavior.
+
+Correlation traps, however, provide a second, different
+route to non-self-averaging, even at criticality; we discuss this in the next subsection.
+
+
+\clearpage
+\subsection{Random Matrix Theory view}
+\label{sxn:selfavg_rmt_v1}
+
+Random Matrix Theory gives a direct finite-matrix test of the self-averaging
+boundary in the form of \emph{Correlation Traps}.
+Starting from a trained layer, we randomize its entries elementwise,
+\begin{equation}
+  \mathbf W \longrightarrow
+  \mathbf W^{\pi}:=\operatorname{rand}(\mathbf W),
+  \label{eq:rmt_elementwise_randomization_v1}
+\end{equation}
+by flattening the matrix, randomly permuting all $NM$ entries, and reshaping
+it.  This preserves the exact weight multiset and its one-point statistics,
+but removes the learned arrangement of those weights.  For the classical
+spectral test, $\mathbf W^{\pi}$ is therefore uncorrelated and effectively
+i.i.d:
+\begin{equation}
+  W_{ij}^{\pi}
+  \overset{\mathrm{eff.\ i.i.d.}}{\sim}
+  \widehat{\rho}_{W}.
+\end{equation}
+
+The observable is the full ESD of
+$\mathbf X^{\pi}=N^{-1}(\mathbf W^{\pi})^T\mathbf W^{\pi}$.  For a large
+finite-variance matrix, this ESD approaches the deterministic
+Marchenko--Pastur (MP) law~\cite{MarchenkoPastur1967}; MP is the
+self-averaging baseline.  It is the large-$N$ limit ($Q=\tfrac{N}{M}$ fixed)
+of the mean distribution $\rho^{\pi}(\lambda)$ for the ESD of $\mathbf W^{\pi}$.
+For a typical i.i.d. rectangular matrix, we expect all the eigenvalues
+to lie within the MP bulk, to within finite-size Tracy--Widom (TW)
+fluctuations~\cite{TracyWidom1996,BaikBenArousPeche2005}.
+
+If an eigenvalue $\lambda_{\rm trap}$ appears beyond
+the MP bulk edge $\MPstart$ plus the TW scale $\Delta_{\rm TW}$, we call these
+outliers \emph{Correlation Traps}.
+\begin{equation}
+\lambda_{\rm trap} > \MPstart+\Delta_{\rm TW}
+\end{equation}  
+Figure~\ref{fig:rmt_v1_mp} illustrates several correlation traps.
+
+\begin{figure}[!h]
+\centering
+\safeincludegraphics[width=0.78\columnwidth]{figures/traps.png}
+\caption{\textbf{The randomized MP test.}
+After $\mathbf W\to\operatorname{rand}(\mathbf W)$, the bulk follows the MP
+fit.  The dashed line marks the far bulk plus TW edge $(\MPstart+\Delta_{\rm TW})$;
+persistent eigenvalues to its right are counted as correlation traps.}
+\label{fig:rmt_v1_mp}
+\end{figure}
+
+A finite number of traps may leave the limiting MP bulk intact, since each
+outlier carries mass $1/M$.  The violation is instead localized at the edge:
+the largest $\lambda$ are no longer explained by ordinary finite-size
+fluctuations.
+
+\begin{figure}[!t]
+\centering
+\safeincludegraphics[width=\columnwidth]{figures/mlp_traps.png}
+\vspace{-0.30em}
+\safeincludegraphics[width=\columnwidth]{figures/mlp_alphas.png}
+\caption{\textbf{Long-horizon grokking.}
+Top: test accuracy falls as the randomized-spectrum trap count rises.
+Bottom: the fitted exponent subsequently crosses below $\alpha=2$.  The
+aligned horizontal axes show the order of the warnings
+\cite{PrakashMartinTraps2026,PrakashMartinLateCollapse2026}.}
+\label{fig:rmt_v1_long}
+\end{figure}
+
+Figure~\ref{fig:rmt_v1_long} (top panel) depicts results from a long-horizon grokking experiment,
+where a three-layer MLP is trained on a subset of MNIST until it induces
+pre-grokking memorization, then good performance (grokking), and finally overfitting
+(anti-grokking)\cite{PrakashMartinTraps2026,PrakashMartinLateCollapse2026}.
+The red line denotes the training accuracy, which becomes perfect at about $10^5$
+training steps.  The purple line denotes the test accuracy, which increases to
+optimal at about $10^6$ steps, and then drops sharply.
+The blue line counts the number of correlation traps in the system
+(in all three layers). The traps become non-zero as soon as the system test accuracy drops
+at $10^6$ steps, and increase with decreasing test accuracy.
+
+The bottom panel displays the average layer $\alpha$ for the FC1 and FC2 layers.
+Notice that $\alpha\rightarrow 2$ as the performance increases, and $\alpha<2$
+after first correlation trap forms and the test error drops.
+The drop in average $\alpha$ is late because the traps distort the ESD
+and the PL fits.
+
+
+These results indicate that conventional overfitting leaves a
+spectral record in the weights.  Training accuracy remains high, but held-out
+accuracy degrades as persistent MP-edge anomalies accumulate.  Traps are often
+seen with aggressive learning rates or prolonged training.  Early stopping
+and weight decay can help, but neither directly checks whether the randomized
+ESD has returned to MP.
+
+The trap test is different from HTSR.  Traps are measured on
+$\operatorname{rand}(\mathbf W)$; HTSR is measured on the original correlated
+$\mathbf W$ and treats its broad non-MP ESD as learned structure
+\cite{MartinMahoneyJMLR2021}.  A trap can distort the upper ESD and damage the
+power-law fit, sometimes contributing to an apparent $\alpha<2$.  Conversely,
+a smooth heavy-tailed ESD can cross below two without an isolated trap.
+Thus collective heavy-tailed fluctuations and localized correlation traps are
+distinct mechanisms of non-self-averaging.
+
+\clearpage
+\begin{strip}\vspace{-0.55em}
+\centering
+\safeincludegraphics[width=0.95\textwidth]{figures/rg_flow_fxd.png}
+\captionof{figure}{Operational RG flow for one dense layer. The step first decimates tiny-eigenvalue noise and retains an ECS tail $\Rell$. The SETOL-normalized retained eigenvalues are $\tilde{\lambda}_{\Rell,i}$, and the retained dimension is $M_{\Rell}=|\Rell|$. The ERG trace-log condition
+  fixes the product scale, $\sum_{i\in\Rell}\log(\tilde{\lambda}_{\Rell,i})=0$, where the marginality of $\alpha=2$ sets the normalization on $\tilde{\lambda}$.
+  %The remaining   spectral energy gain is then tested for stability.
+  }
+\label{fig:rg_flow_energy}
+\vspace{-0.75em}\end{strip}
+
+
+\section{Wilsonian RG Flow}
+\label{sxn:rg}
+\vspace{0.35em}
+\begin{tcolorbox}[marginalbox,title=\textbf{Optimizer-induced RG flow}]
+Wilsonian RG describes the flow of the layer ESD(s) induced by the optimizer steps  $\Opt[\circ]$
+\eqtight{ \mathbf{W}_{t+1}=\Opt[\mathbf{W}_t],
+  \qquad
+  \mathcal{RG}[\rho({\lambda})]\longrightarrow \rho_{\rm tail}^{*}({\lambda})
+}
+
+\takeaway{The best layers approach an RG fixed point $\Ferg$.}
+\end{tcolorbox}
+
+%\begin{tcolorbox}[marginalbox,title=\textbf{ Optimizer-induced RG flow}] 
+%  RG describes the flow of the spectral density
+%  \eqtight{\mathcal{R}_{\mathrm{RG}}:\rho(\lambda)\longrightarrow \rho_{\rm tail}^{*}(\lambda).}
+%  \takeaway{The RG flow encodes how the spectral density $\rho(\lambda)$ approaches a candidate fixed point,
+%    satisfying both the HTSR $\alpha\simeq 2$ and the SETOL ERG trace-log.}
+%\end{tcolorbox}
+
+This section describes a Wilsonian RG construction for the
+spectral density $\rho({\lambda})$ as the heavy-tailed power-law density forms
+and approaches the HTSR $\alpha=2$ candidate optimal state under the SETOL ERG trace-log rescaling.
+It is the shape, not the scale, that regulates the final layer quality and therefore the final model generalization accuracy.
+The retained layer should help accuracy improve, or equivalently help error decrease,
+without making the layer contribution explode or collapse. 
+ERG trace-log normalization removes arbitrary scale.
+The RG construction shows when the spectral shape collapses, diverges, or converges.
+
+The goal here  is to identify an effective description of a trained
+layer--the Effective Correlation Space (ECS)--by repeatedly removing
+small-scale spectral components, retaining the dominant
+correlation structure, and eliminating redundant overall scale.
+Rather than develop a formal RG map, we describe the
+construction operationally using a truncated-SVD picture
+together with explicit ERG trace-log renormalization. The resulting
+flow acts on the retained spectral density (in the ECS)
+and motivates the HTSR $\alpha=2$ as the boundary between
+learning and overfitting.
+
+Figure~\ref{fig:rg_flow_energy} depicts the RG operational training flow which is generated by the training dynamics
+of the underlying optimizer on each step: 
+$\mathbf{W}_{t+1}=\Opt[\mathbf{W}_t]$.
+In practice, the RG flow can be seen as a series of truncated-SVD steps, called decimations.
+Each step keeps the dominant spectral directions that contribute to the generalization accuracy,
+while dropping directions that do not matter at the current scale.
+Each retained layer is rescaled according to the trace-log law.
+The best performing models have layers that approach the SETOL ERG fixed point $\Ferg$,
+converging to an ESD with HTSR PL exponent $\alpha\simeq 2$, neither overfitting $(\alpha<2)$
+nor underfitting $(\alpha>2)$ their training data.
+
+\subsection{HTSR phases and RG}
+\label{sxn:htsr_rg}
+
+HTSR provides the empirical starting point for the RG analysis.
+Section~\ref{sxn:htsr} described trained layer spectra using HTSR heavy-tailed universality classes.
+Here we use those classes as a coarse description of training flow.
+We do not start with a microscopic model of the data, the optimizer, or the architecture.
+We start with the observed fact that trained layer ESDs often develop heavy-tailed power-law spectra.
+
+\begin{center}
+\small
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.06}
+\captionof{table}{HTSR classes interpreted as an RG flow.}
+\label{tab:htsr_rg_flow}
+\begin{tabularx}{\linewidth}{@{}lcc@{}}
+\toprule
+Phase & Exponent & RG meaning \\
+\midrule
+Random-like / Bulk+Spikes & no PL fit & Gaussian branch \\
+Weakly HT & $\alpha\gg2$ & weak-energy sector \\
+Moderately HT & $\alpha>2$ & approach to boundary \\
+Strongly HT & $\alpha=2$ & balanced boundary \\
+Very HT / traps & $\alpha<2$ & dominant-tail sector \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Table~\ref{tab:htsr_rg_flow} labels the HTSR phases, and Figure~\ref{fig:rg_flow_energy} shows how a layer moves through them. Training starts with many tiny-eigenvalue modes and a weak or steep tail, then retains an ECS tail and moves the ESD toward a more structured heavy-tailed spectrum.
+The spectral energy $\Ered$ from Eq.~\eqref{eq:trace_law_energy} gives this motion its learning meaning:
+for $\alpha>2$ the retained energy is weak and can collapse (orange panel),
+near $\alpha\simeq2$ it remains balanced across scales (green panel),
+and for $\alpha<2$ the tail modes can carry too much energy and drive the overfit regime (red panel)
+where the energy diverges.
+
+%%%Figure~\ref{fig:rg_flow_energy} shows this flow operationally.
+%%%The top row begins with many tiny-eigenvalue modes and a weak or steep tail.
+%%%Training trims the small modes, retains an ECS tail, and moves the ESD toward a more structured heavy-tailed spectrum.
+%%%In the favorable case, the fitted exponent decreases toward $\alpha\simeq2$ and the retained spectrum reaches the balanced panel on the right.
+%%%If the flow continues past this boundary, the layer can enter the red overfit regime, where a few dominant tail modes control the energy.
+%%%
+%%%The spectral energy $\Ered$ from Section~\ref{sxn:tracelog} gives these phases a simple meaning.
+%%%For $\alpha>2$, the retained energy is spread over weak tail modes and can collapse, as in the orange panel of Figure~\ref{fig:rg_flow_energy}.
+%%%Near $\alpha\simeq2$, the retained energy stays balanced across scales, as in the green panel.
+%%%For $\alpha<2$, a few dominant modes can carry too much energy, as in the red panel.
+%%%
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{figures/HT-MU.png}
+\caption{\textbf{Heavy-Tailed Mechanistic Universality.}}
+\label{fig:ht_mechanistic_universality}
+\vspace{-0.6em}
+\end{figure}
+
+Figure~\ref{fig:ht_mechanistic_universality} illustrates what HTSR calls \emph{Mechanistic Universality}.
+Different architectures, datasets, and optimizers can produce the same heavy-tailed spectral endpoint.
+This universality is spectral, not elementwise.
+It is a property of the ESD of the correlation matrix $\X=N^{-1}\W^T\W$, not a consequence of
+the distribution of entries $W_{ij}$. 
+Indeed, the entries are generally not HT (unless the layer is overfit); learned correlations can make the spectrum heavy-tailed.
+Here we interpret this mechanistic universality as a preview of RG universality; SETOL provides the bridge.
+
+\newpage
+
+\subsection{SETOL and RG}
+\label{sxn:setol_rg}
+
+SETOL contributes the scale convention for the RG analysis.
+Section~\ref{sxn:setol} introduced the layer quality generating function, an effective free energy  $\IZQ$
+and showed that the Wilsonian ERG construction leads to the ERG trace-log condition.
+The present paper does not need to evaluate the full SETOL quality $\overline{Q}$.
+Instead, we use the ERG trace-log condition to define the scale,
+and we study the flow of the retained spectral energy $\Ered$ on that scale.
+
+\begin{tcolorbox}[marginalbox,title=\textbf{SETOL $\rightarrow$ RG energy flow}]
+\small
+\textbf{Spectral Energy:}
+\[
+\Ered=\frac{1}{\Mred}\Tr\Xtilde_{\Rell}
+=\int \tilde{\lambda}_{\Rell} \rhohat_{\Rell}(\tilde{\lambda}_{\Rell})\,d\tilde{\lambda}_{\Rell} .
+\]
+\textbf{Gauge fixing:}
+\[
+\Tr\log\Xtilde_{\Rell}=0 .
+\]
+\textbf{Truncated SVD is exact}
+\[
+\W \rightarrow \W_{\Rell}=\U\mathbf{\Sigma}_{\Rell}\Vt
+\]\[
+\mathbf{\Sigma}_{\Rell}:=\diag[0,\cdots,0,\sigma_{1},\sigma_{2},\cdots\sigma_{M_{\Rell}}],\quad\sigma_{i}\sim\sqrt{\lambda_{i}}
+\]
+\takeaway{RG studies how the spectral components concentrate.}
+\end{tcolorbox}
+
+Figure~\ref{fig:rg_flow_energy} shows RG decimation, rescaling, and the resulting energy flow.
+The ERG trace-log is the scale-fixing operation;
+it is not itself the flowing energy. The quantity whose flow we study is the retained spectral energy $\Ered$,
+rescaled as needed.
+Eq.~\eqref{eq:trace_law_energy} defined this energy as the first moment of the retained ECS.
+The RG question is therefore concrete: after the trace-log removes arbitrary product scale,
+how does $\Ered$ flow across spectral scales?
+
+We answer this question by using the trace-log to measure covariance volume. On the retained positive spectrum,
+\begin{equation}
+\Tr\log\X_{\Rell}
+=
+\log\det\X_{\Rell}
+=
+\sum_{i\in\Rell}\log\lambda_i .
+\end{equation}
+Thus the trace-log measures the logarithm of the retained covariance volume. It does not add eigenvalue gains directly;
+it measures their product scale.
+Once fixed, the natural comparison for the RG flow will be across fixed-ratio bands $[\Lambda,b\Lambda]$,
+or equivalently across equal-width intervals in $\log\tilde{\lambda}_{\Rell}$;
+this lets us define a \emph{Spectral Band Energy}, $G_E(\Lambda,b)$, below.
+
+At the proposed Wilsonian ERG fixed point, the layer weight matrix $\W$ can be replaced
+by its Truncated SVD form, $\W_{\Rell}=\W_{\Rell}=\U\mathbf{\Sigma}_{\Rell}\Vt$, where
+$\mathbf{\Sigma}_{\Rell}$ is the diagonal operator of $M_{\Rell}$ singular values $(\sigma_{i})$
+(properly normalized) defined on the retained ECS, and zero for the other  $M-M_{\Rell}$ ones.
+Doing this, SETOL predicts the model can faithfully reproduce the test/generalization accuracy.
+That is, the layer generalizing components fully concentrate into the ECS.
+
+%We therefore study how much retained layer energy lies in each spectral band. Define the band energy gain
+%\begin{equation}
+%G_E(\Lambda,b)
+%=
+%\int_{\Lambda}^{b\Lambda}
+%\lambda\,\widehat\rho_{\Rell}(\lambda)\,d\lambda .
+%\end{equation}
+%This is the portion of the retained spectral energy carried by the logarithmic band $[\Lambda,b\Lambda]$. If $G_E(\Lambda,b)$ decreases as the band moves to larger eigenvalues, the retained tail is weak. If it increases, the layer is moving toward dominant-tail concentration. If it remains comparable across bands, the spectrum is scale-balanced.
+
+The next subsection shows that the HTSR power-law tail $\rho_{\rm tail}(\tilde{\lambda})$ makes the energy gain stable at $\alpha=2$.
+That is, we illustrate that $\alpha$ is analogous to an RG universal critical exponent.
+
+\clearpage
+
+\subsection{Operational view of the RG flow}
+\label{sxn:effdescr}
+
+Figure~\ref{fig:rg_flow_energy} depicts the spectral RG flow for one layer.  The flow turns the ideas from Sections~\ref{sxn:htsr_rg} and~\ref{sxn:setol_rg} into a repeatable operation: decimate tiny-eigenvalue noise, retain an ECS tail, impose the SETOL ERG trace-log gauge, and compare the remaining spectral shape.  Section~\ref{sxn:htsr_rg} supplies the HTSR input: the retained ESD should approach a power-law tail, with the strongest checkpoints often near $\alpha\simeq 2$.  Section~\ref{sxn:setol_rg} supplies the SETOL input: generalization accuracy is controlled by the layer ESD through the ECS and the trace-log condition.  Section~\ref{sxn:selfavg} supplies the risk test: on the SETOL-normalized retained ECS, the retained spectral energy should self-average instead of concentrating in a few dominant tail modes.  This subsection makes that control flow operational.
+
+Figure~\ref{fig:rg_flow_energy} separates the RG step into four actions.  First, the step removes tiny-eigenvalue noise that does not contribute to the retained correlation structure.  Second, it keeps the ECS tail and represents the layer by the truncated matrix $\W_{\Rell}$.  Third, it evaluates the retained operator on the Frobenius rescaling $\Tr{\Xtilde_{\Rell}}=M$ and checks the ERG trace-log gauge.
+When the trace-log is exact, the ECS is exact.
+Fourth, it tests the remaining spectral energy. The point is not to reproduce SGD or any microscopic optimizer.
+The point is to take an RG view of the training flow and  describe the learning process as a coarse-graining induced by the  optimizer trajectories
+by considering the linearized spectral view at each layer.
+
+The three regimes in Figure~\ref{fig:rg_flow_energy} give the operational meaning of underfit, balanced, and overfit.  In the orange regime, $\alpha>2$ and the tail is steep.  The retained layer may self-average, but the spectral energy can be too weak to carry enough learned correlation.  In the green regime, $\alpha\simeq2$ and the retained spectral energy stays balanced across logarithmic spectral scales.  This is the stable layer-quality regime.  In the red regime, $\alpha<2$ or correlation traps appear.  The spectral energy diverges in the RG flow, the layer quality can become strongly non-self-averaging, and
+the generalization accuracy degrades.
+
+SETOL suggests that the RG flow induces a truncated layer $\W$.  SETOL maps layer quality, and therefore generalization accuracy, to the layer ESD.  Once quality depends on the retained spectrum, not on every microscopic weight $W_{i,j}$, an effective description can replace the full layer by a retained ECS matrix.  At the fixed point, SETOL predicts that the ECS aligns with the HTSR power-law tail and that the truncated-SVD layer $\W_{\Rell}$ preserves the test/generalization contribution of the original layer.  This is the reason the operational RG step in Figure~\ref{fig:rg_flow_energy} is a truncated-SVD step.
+
+The RG flow acts on retained spaces and retained operators together.  At step $(n)$, the effective object is
+\begin{equation}
+    \left(\Rell^{(n)},\,\X_{\Rell}^{(n)}\right),
+    \qquad
+    \Mred^{(n)}=|\Rell^{(n)}| .
+    \label{eq:flowpair_operational_v5}
+\end{equation}
+A decimation step changes $\Rell^{(n)}$ by removing eigencomponents outside the current correlated description.
+the ECS is selected by imposing the trace-log gauge condition on the Frobenius-normalized retained correlation operator:  $\Tr{\log\Xtilde^{(n)}}=0$;
+
+
+SETOL then selects the $\ECSstart$, the start of the ECS, based
+on the trace-log condition
+\begin{equation}
+  \sum_{\tilde{\lambda}_{\Rell}} \log \tilde{\lambda}_{\Rell} = 0,\quad\tilde{\lambda}_{\Rell}\ge\ECSstart
+\end{equation}
+At optimality the ECS starts at the PL tail, $\tilde{\lambda}^{+}_{\Rell}=\tilde{\lambda}^{+}_{\rm PL}$.
+When $\alpha<2$, the ECS can be smaller than the PL, with  $\ECSstart > PLstart$.
+This indicates that a few tail eigencomponents can dominate.
+Simultaneously, the PL tail can extend deep into previous bulk region,
+indicating that the spectral fluctuations may not concentrate (as in Eq.~\ref{eq:spectral_energy_covariance}).
+These two mechanisms are central to understanding why $\alpha<2$ is a signature of overfitting.
+
+The ECS arises implicitly during the optimization step as the learning mechanism effectively
+compresses the model at each layer, causing the generalizing components of each $\W$ to flow
+into a lower-rank representation.  But it is unclear how much compression is enough,
+and how much is too much.
+But because the typical optimizer is not aware of the RG flow,
+the ECS may be too weak and the spectral energy may collapse.
+Or, the layer may be overfit to the training data, causing the spectral energy to diverge
+because it concentrated in a few dominant modes, or many strongly fluctuating modes.
+
+The retained ESD is the shape variable defined  by the RG step.  Formally, we can write
+\begin{equation}
+    \rhohat_{\Rell}(\tilde{\lambda}_{\Rell})
+    =
+    \frac{1}{\Mred}\sum_{i\in\Rell}\delta(\tilde{\lambda}_{\Rell}-\tilde{\lambda}_{\Rell,i}),
+    \qquad
+    \int\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})\,d\tilde{\lambda}_{\Rell}=1 .
+    \label{eq:prob_esd_operational_v5}
+\end{equation}
+In practice, however, we use the discrete retained spectral energy (on the gauge slice)
+\begin{equation}
+    \widetilde E_{\Rell}
+    =
+    \frac{1}{\Mred}\Tr\Xtilde_{\Rell}
+    =
+    \int \tilde{\lambda}_{\Rell}\,\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})\,d\tilde{\lambda}_{\Rell} .
+    \label{eq:retained_trace_energy_operational_v5}
+\end{equation}
+Section~\ref{sxn:selfavg} showed why this energy matters: it provides a layer-level quantity that can self-average when many weakly correlated retained eigencomponents contribute, but (again) can fail to self-average in two  ways. First, a small number of dominant modes can control the energy, as in correlation traps. Second, and more importantly here, collective correlations among the weights can keep the relative fluctuations of the spectral energy at order one across the entire ECS. This behavior is marginal at $\alpha=2$ and becomes increasingly tail-dominated for $\alpha<2$, where the largest eigencomponents can carry an $O(1)$ fraction of the total spectral energy. Although the boundary at $\alpha=2$ may therefore be marginally non-self-averaging, the spectral energy grows only logarithmically with system size.  This is shown below, however, first we would like to show that the SETOL trace-log condition naturally emerges
+through  a scale-invariant RG flow defined by the unit Jacobian, the physically relevant RG transformation.
+
+\clearpage
+\input{section5_4}
+\clearpage
+\subsection{RG Scale counting}
+\label{sxn:rgcount}
+
+RG scale counting asks how the layer-quality contribution changes as we move
+across spectral scales. In our spectral RG description, the spectrum is not treated as a
+flat list of eigenvalues. It is grouped into scale bands $[\tilde{\lambda}, b\tilde{\lambda}]$ that are
+natural for a power-law distribution.  Then we ask whether each
+band contributes a stable amount on the SETOL trace-log gauge, or if the gain collapses/diverges.
+
+\begin{tcolorbox}[marginalbox,title=\textbf{RG boundary}]
+RG counts gain by scale.
+\eqtight{G_E(\Lambda,b)=\int_\Lambda^{b\Lambda}\tilde{\lambda}\rho({\lambda})\,d\tilde{\lambda}.}
+\eqtight{\rho({\lambda})=C\tilde{\lambda}^{-\alpha},\qquad \alpha=2\Rightarrow G_E(\Lambda,b)=C\log b.}
+\begin{itemize}
+\item \textbf{$\alpha>2$:} larger bands contribute less and less gain.
+\item \textbf{$\alpha=2$:} each log band contributes the same gain.
+\item \textbf{$\alpha<2$:} spectral energy diverges
+\end{itemize}
+\takeaway{$\alpha\simeq2$ is the log-scale-balanced boundary.}
+\end{tcolorbox}
+
+One RG step is a spectral operation in this paper. It discards eigencomponents outside the current effective description. It evaluates the retained operator on the fixed SETOL scale $\Tr{\Xtilde_{\Rell}}=M$. It then compares the retained spectral shape with the previous retained shape. A fixed point means this decimate-and-test operation no longer changes the retained spectral shape or layer-quality gain.
+
+The word ``exact'' is narrow here.
+In SETOL, it refers to taking a single scale-invariant transformation, as in Eq.~\ref{eq:setol_RG_step}.
+Here, it refers to a proposed Wilsonian map on the retained spectral distribution, not to a closed-form solution of the full network dynamics. We identify the candidate boundary and the candidate fixed-point signature of this map. It does not claim that one finite checkpoint exactly solves the full RG flow,
+although it is hypothesized.
+
+The three spectral regimes are summarized in Table~\ref{tab:regimes}.
+These are direct analogues to the reduced description of the HTSR classes in Table~\ref{tab:htsr_rg_flow}.
+Each regime arises by considering the behavior of the spectral band energy in the limit
+of a continuous RG flow along the log-bands.  
+
+\begin{table*}[t]
+\centering
+\caption{Scale counting, statistics, and empirical meaning of the three spectral regimes.}
+\label{tab:regimes}
+%\scriptsize
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}p{0.085\textwidth}@{\hspace{0.5em}}p{0.19\textwidth}p{0.23\textwidth}p{0.245\textwidth}X@{}}
+%\begin{tabularx}{\textwidth}{@{}p{0.10\textwidth}p{0.20\textwidth}p{0.24\textwidth}p{0.22\textwidth}X@{}}
+\toprule
+Regime & spectral energy per scale & Scale-flow meaning & Statistical meaning & Learning meaning \\
+\midrule
+$\alpha>2$ & $\tilde{\lambda}^2\rho({\lambda})\sim\tilde{\lambda}^{2-\alpha}\to0$ & Spectral band gain decays; weak-tail sector or approach toward the trivial fixed point $\Fzero$. & First moment self-averages; dominant tail components stay controlled. & Stable but potentially weakly correlated or undertrained tail. \\
+$\alpha=2$ & $\tilde{\lambda}^2\rho({\lambda})\sim\tilde{\lambda}^0$ & Scale-balanced logarithmic-band state; candidate $\Ferg$ when ECS aligns with the fitted tail. & Marginal self-averaging boundary. Universal critical exponent. & Maximal stable structured-variation capture before tail-component domination. \\
+$\alpha<2$ & $\tilde{\lambda}^2\rho({\lambda})\sim\tilde{\lambda}^{2-\alpha}\to\infty$ & Spectral band gain grows
+toward the dominant tail components. & Tail components and fluctuations
+can dominate the first moment. & Overfit risk; correlation traps; held-out degradation. \\
+\bottomrule
+\end{tabularx}
+\vspace{-0.25em}
+\end{table*}
+
+The fixed point is layerwise. We do not posit one global fixed point for an entire multi-layer network. Rather, each layer has its own spectrum, its own retained ECS, and its own  Wilsonian-style spectral fixed point. A strong checkpoint is therefore a coordinated network state in which the matrix-like layers sit near their own SETOL ERG fixed points.
+
+Because the spectral density $\rho({\lambda})$ is heavy-tailed power law for a well-trained
+layer, the natural RG scale band is logarithmic in $\tilde{\lambda}$, and the natural coordinate is
+\begin{equation}
+x=\log\tilde{\lambda}.
+\end{equation}
+A fixed-width interval in $x$ is a fixed-ratio spectral shell $\tilde{\lambda}\in[\Lambda,b\Lambda]$.
+This is the spectral analogue of coarse-graining by length scale in ordinary
+RG. Each logarithmic band asks how much spectral energy is contributed by one
+multiplicative decade of eigenvalues.
+
+
+The object being counted is retained spectral energy $\Ered$~\eqref{eq:prob_esd_operational_v5}/
+Since $\dd\tilde{\lambda}_{\Rell}=\tilde{\lambda}_{\Rell}\dd\log\tilde{\lambda}_{\Rell}$, we have
+\begin{equation}
+\dd\Ered=\tilde{\lambda}_{\Rell}\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})\dd\tilde{\lambda}_{\Rell}
+=\tilde{\lambda}_{\Rell}^2\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})\dd\log\tilde{\lambda}_{\Rell}.
+\label{eq:shell_dE}
+\end{equation}
+Thus the spectral energy per logarithmic spectral scale is
+\begin{equation}
+\frac{\dd\Ered}{\dd\log\tilde{\lambda}_{\Rell}}=\tilde{\lambda}_{\Rell}^2\rhohat_{\Rell}(\tilde{\lambda}_{\Rell}).
+\label{eq:shellenergy}
+\end{equation}
+Substituting $\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})\simeq C\tilde{\lambda}_{\Rell}^{-\alpha}$ then gives $C\tilde{\lambda}_{\Rell}^{2-\alpha}$, so $\alpha=2$ is precisely the case in which each multiplicative spectral shell contributes the same spectral energy.
+In the RG sense, we say \emph{$\alpha=2$ is marginal}.
+
+This quantity answers an interpretable question: how much of the retained layer's quality gain, and therefore how much of its possible accuracy contribution, lives near this multiplicative eigenvalue scale?
+
+A power-law tail makes the answer transparent. Given the retained PL tail, we can evaluate Eq.~\ref{eq:shellenergy} as
+\begin{equation}
+\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})\simeq C\tilde{\lambda}_{\Rell}^{-\alpha}
+\rightarrow
+\frac{\dd\Ered}{\dd\log\tilde{\lambda}_{\Rell}}
+\sim C\tilde{\lambda}_{\Rell}^{2-\alpha}.
+\label{eq:shellpower}
+\end{equation}
+Table~\ref{tab:regimes} summarizes the three RG regimes.
+When $\alpha>2$, the high-eigenvalue shells carry less spectral energy with scale.
+The strongest generalizing components are less and less important.  Generalization occurs but is weak.
+When $\alpha<2$, high-eigenvalue shells carry more spectral energy with scale. The largest retained directions can dominate and the spectral energy diverges.
+When $\alpha=2$, the change in energy is constant for all logarithmic shells; each shell carries comparable spectral energy gain. 
+
+We now do the full RG scale-counting calculation of the spectral band energy gain for each regime.
+Table~\ref{tab:rgterms} summarizes the  RG notation used below.
+
+\begin{table*}[t!]
+\centering
+%\scriptsize
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.05}
+\caption{Special RG notation used in this section.}
+\label{tab:rgterms}
+\begin{tabularx}{\textwidth}{@{}p{0.16\textwidth}p{0.24\textwidth}X@{}}
+\toprule
+Term & Notation & Meaning here \\
+\midrule
+RG step &
+$\Rell_{\rm ECS}$ &
+Project to the retained ECS and evaluate the ESD on the SETOL scale. \\
+
+Fixed point &
+$\Rell_{\rm RG}[\rho^\star]=\rho^\star$ &
+A SETOL-normalized ESD that is unchanged by the RG step. \\
+
+Weak-tail branch &
+$\Fzero,\quad g_E\ \text{undefined}$ &
+The trivial solution  HTSR Random-like phase and nearby ESDs. \\
+
+Correlated branch &
+$\Ferg$ &
+The empirical RG fixed point candidate. \\
+
+Band Energy &
+$\displaystyle G_E(\Lambda,b)$ &
+Spectral energy carried by one logarithmic spectral band. \\
+
+Band gain &
+$g_E(\tilde{\lambda}_{\Rell}):=\tilde{\lambda}_{\Rell}^2\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})$ &
+Spectral energy per logarithmic spectral scale. \\
+
+Spectral Beta function &
+$\beta_E(g_E)=d g_E/d\log\tilde{\lambda}_{\Rell}$ &
+The scale derivative of the spectral energy. For a PL tail, $\beta_E(g_E)=(2-\alpha)g_E$. \\
+
+
+Scaling dimension &
+$y_E=2-\alpha$ &
+The RG exponent controlling energy or spectral energy.\\
+
+Marginal condition &
+$y_E=2-\alpha=0$ &
+The logarithmic spectral bands are balanced and carry comparable energy/gain. \\
+\bottomrule
+\end{tabularx}
+\vspace{-0.6em}
+\end{table*}
+
+The finite-shell calculation says the same thing without derivatives. For a multiplicative shell $[\Lambda,b\Lambda]$,
+\begin{equation}
+G_E(\Lambda,b)=\int_\Lambda^{b\Lambda}\tilde{\lambda}_{\Rell}\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})\dd\tilde{\lambda}_{\Rell}.
+\label{eq:finite_shell}
+\end{equation}
+If $\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})=C\tilde{\lambda}_{\Rell}^{-\alpha}$, then for $\alpha\ne2$,
+\begin{equation}
+G_E(\Lambda,b)=
+\frac{C\left[(b\Lambda)^{2-\alpha}-\Lambda^{2-\alpha}\right]}{2-\alpha},
+\label{eq:finite_shell_ne2}
+\end{equation}
+while for $\alpha=2$,
+\begin{equation}
+G_E(\Lambda,b)=C\log b.
+\label{eq:finite_shell_eq2}
+\end{equation}
+The last expression is independent of $\Lambda$. That is the cleanest statement of spectral scale balance: a fixed-ratio band carries the same spectral energy no matter where the band is placed in the tail.
+
+We therefore use the spectral shell gain itself as the running coupling,
+\begin{equation}
+g_E(\tilde{\lambda}_{\Rell})
+:=
+\frac{\dd\Ered}{\dd\log\tilde{\lambda}_{\Rell}}
+=
+\tilde{\lambda}_{\Rell}^2\rhohat_{\Rell}(\tilde{\lambda}_{\Rell}).
+\label{eq:gE_correct}
+\end{equation}
+This derivative is taken within one fixed checkpoint while neighboring spectral bands are compared.
+
+The local slope is a scale derivative. It is not a training-time derivative. It compares neighboring eigenvalue bands inside one checkpoint. In RG language, this scale derivative is called a \emph{beta function}. Define
+\begin{equation}
+\alpha_{\rm loc}(\tilde{\lambda}_{\Rell})=
+-\frac{\dd\log\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})}{\dd\log\tilde{\lambda}_{\Rell}}.
+\label{eq:alpha_loc}
+\end{equation}
+Then
+\begin{equation}
+s(\tilde{\lambda}_{\Rell})=\frac{\dd}{\dd\log\tilde{\lambda}_{\Rell}}
+\log\left[\tilde{\lambda}_{\Rell}^2\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})\right]
+=2-\alpha_{\rm loc}(\tilde{\lambda}_{\Rell}),
+\label{eq:slope_correct}
+\end{equation}
+and equivalently
+\begin{equation}
+\frac{\dd g_E}{\dd\log\tilde{\lambda}_{\Rell}}=
+\left[2-\alpha_{\rm loc}(\tilde{\lambda}_{\Rell})\right]g_E(\tilde{\lambda}_{\Rell}).
+\label{eq:beta_local}
+\end{equation}
+For an exact power law on the fitting window, we can then define
+\emph{the leading, or tree-level, RG beta function} 
+\begin{equation}
+\beta_E(g_E)
+\equiv
+\frac{dg_E}{d\log\tilde{\lambda}_{\Rell}}
+=
+(2-\alpha)g_E 
+\end{equation}
+where the associated scaling dimension is
+\begin{equation}
+y_E = 2-\alpha .
+\end{equation}
+The sign of $y_E$ determines whether spectral energy is
+relevant, irrelevant, or marginal under rescaling.
+This scale-counting argument identifies the marginal
+boundary, but it does not by itself prove a complete
+Wilsonian fixed point.
+
+The fixed-point language should therefore be read operationally. A fixed point is not a single training checkpoint.
+It is a SETOL-normalized spectral shape that is stable  after the final decimation and trace-log testing.
+
+The weak-tail branch is the trivial solution in which no extensive
+retained ECS survives the coarse graining:
+\begin{equation}
+  \Fzero:
+    \qquad
+    w_{\Rell}
+    :=
+    \frac{M_{\Rell}}{M}
+    \longrightarrow 0 .
+        \qquad
+g_E\;\text{undefined}
+    \label{eq:trivial_rg_branch}
+\end{equation}
+The correlated solution is the ERG fixed-point candidate,
+\begin{equation}
+\Ferg:\qquad
+0<g_E^\star<\infty,
+\quad
+\alpha\simeq2,
+\quad
+\Rell_{\rm ECS}^\star\simeq\mathcal T_{\rm PL}^\star.
+\label{eq:FHTSR}
+\end{equation}
+Power-law scale invariance alone does not uniquely select $\alpha=2$;
+what distinguishes $\alpha^\star\simeq2$ is that the spectral coupling
+is marginal.
+
+This is the RG critical boundary.
+The scale exponent $y_E=2-\alpha$ changes sign there, so $\alpha=2$ plays the role of the critical exponent for this HTSR spectral universality class.
+Thus $\alpha=2$ is the tree-level scale-balance condition for logarithmic bands, while $\Ferg$ is the empirical correlated fixed-point candidate.
+
+Returning to the earlier discussion, notice that the
+HTSR boundary between self-averaging and non-self-averaging phases occurs at the same exponent as the RG scale-balance boundary.
+That is why $\alpha=2$ is not merely a fitted number.
+It is the proposed operational critical point where a layer has learned as much correlation structure as possible before overfitting.
+
+By leveraging this RG spectral view, one can now design optimizers that approximate the RG flow;
+the next section explores this.
+
+
+%\input{section_5_51}
+%\input{section_5_52}
+\input{section_rg_mle_norms}
+
+\clearpage
+\input{section_wilson}
+\clearpage
+\input{section6}
+
+
+\clearpage
+\section{Experimental Results}
+\label{sxn:experiments}
+
+\subsection{Muon test}
+\label{sxn:muon_empirical_test}
+
+\begin{figure*}[!b]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/figure9_mnist_optimizer_comparison_panelgrid.png}
+\caption{\textbf{MNIST optimizer comparison: AdamW versus Muon.}
+Same three-layer MNIST MLP trained with AdamW and Muon.
+Short-horizon panel compares early epochs; long-horizon panel tracks the Muon $\alpha_{\ell}(t)\rightarrow 2$.}
+\label{fig:mnist_optimizer_comparison}
+\end{figure*}
+
+%\begin{tcolorbox}[marginalbox,title=\textbf{14. Muon test}]
+%\begin{itemize}
+%\item \textbf{Compare:} AdamW and Muon.
+%\item \textbf{Model:} three-layer MNIST MLP.
+%\item \textbf{Measure:} layerwise \(\alpha(t)\).
+%\end{itemize}
+%\takeaway{Muon changes the spectral route.}
+%\end{tcolorbox}
+
+The Muon test asks whether update geometry changes the spectral route.  The controlled model is a three-layer MNIST MLP, described
+in the Appendix~\ref{app:optimizer_experiments}.  The comparison holds the data, model, and diagnostics fixed.  Only the matrix-valued update rule changes: AdamW~\cite{LoshchilovHutter2019} is compared to Muon.  At checkpoints, \WW{} fits the HTSR exponent of each fully connected layer
+\begin{equation}
+        \alpha_\ell(t),
+        \qquad
+        \ell\in\{\mathrm{FC1},\mathrm{FC2},\mathrm{FC3}\}.
+\end{equation}
+
+
+Figure~\ref{fig:mnist_optimizer_comparison} compares results for Muon against AdamW~\cite{LoshchilovHutter2019};
+it depicts the test and training accuracies and the layerwise $\alpha_{\ell}(t)$ per epoch.
+The top panels compare AdamW and Muon over the first twenty $(20)$ epochs, while the bottom panels
+track Muon for five-hundred $(500)$ epochs.
+
+Consider the top panels first.
+AdamW reaches high train and test accuracy more slowly than Muon, but reaches a comparable range after twenty $(20)$ epochs.
+The AdamW and Muon layerwise $\alpha_\ell(t)$ curves behave very differently over these early epochs.
+For AdamW, all layer $\alpha_\ell(t)$ values drop quickly. FC2 and FC3 approach the optimal value $\alpha=2$,
+but FC1 immediately collapses below $2.0$ and remains trapped in the proposed overfitting regime, even as accuracy increases.
+In contrast, only Muon's FC3 layer approaches $\alpha=2$ quickly,
+while FC1 and FC2 fluctuate at first, and then remain near $\alpha=4$.
+
+The bottom panels show Muon over very long-horizon runs.
+Neither Muon training accuracy nor test accuracy drops; both increase slowly and asymptotically.
+Muon FC1 and FC2 track each other, first fluctuating strongly with $\alpha_\ell(t)\in[3,6]$.
+Eventually, however, all layer values satisfy $\alpha_\ell(t)\rightarrow 2$, again very slowly.
+
+This comparison is intentionally untuned. We made no attempt to optimize learning rates or make Muon win the MNIST benchmark.
+
+In summary, AdamW overfits very quickly, while Muon approaches the RG fixed point
+asymptotically slowly.  This is consistent with Muon removing the
+ RG redundant scale directions, and could be associated with RG \emph{critical slowing down}.
+\clearpage
+\newpage
+\subsection{WW-PGD test}
+\label{sxn:wwpgd_empirical_test}
+
+%\begin{tcolorbox}[marginalbox,title=\textbf{15. WW-PGD repair tests}]
+%\begin{itemize}
+%\item \textbf{Question:} Can WW-PGD repair overfit models?
+%\item \textbf{Test 1:} Fix the AdamW FC1 overfit layer so $\alpha\simeq 2$.
+%\item \textbf{Test 2:} Fix an anti-grokking checkpoint, recover the test accuracy.
+%\end{itemize}
+%\takeaway{WW-PGD can both drive $\alpha\simeq 2$ and recover lost generalization accuracy.}
+%\end{tcolorbox}
+
+\paragraph{Test 1: Fixing AdamW runs.} 
+The WW-PGD test asks whether the optimizer can reduce AdamW overfitting by preventing the layer exponents
+$\alpha_\ell(t)$ from dropping below $2$, while simultaneously helping all layers approach the RG fixed point
+$\alpha\simeq 2$. The experiment is similar to the Muon test (Section~\ref{sxn:muon_empirical_test}), and is described in
+Appendix~\ref{app:optimizer_experiments}.
+
+The WW-PGD condition uses the same AdamW minibatch optimizer,
+but applies the epoch-boundary retraction in Eq.~\eqref{eq:wwpgd_outer_map}.
+The experiment runs for 35 epochs and five independent runs. The WW-PGD hyperparameters are
+$(q=1;\;\eta_B=0.5;\;\eta_C=0.25)$ with zero warmup and a five-epoch homotopy ramp.
+
+Figure~\ref{fig:wwpgd_alpha_per_layer} shows the main effect.
+At each epoch, \WW{} logs the HTSR exponent $\alpha_\ell(t)$.
+The plotted curves report the mean and standard deviation for each layer across five runs
+(FC1, FC2, FC3).
+
+Figure~\ref{fig:wwpgd_alpha_per_layer} shows the layerwise results.
+AdamW alone lets the $\alpha_\ell(t)$ exponents separate by layer.
+As in the Muon comparison, the FC1 exponent satisfies $\alpha_\ell(t)<2$ throughout most of training, while the FC2 exponent satisfies $\alpha_\ell(t)\geq2$.
+FC3  satisfies $\alpha_\ell(t)\gg2$; however, this does not materially change the results.
+
+WW-PGD improves the layer $\alpha_\ell(t)$ for all layers, while keeping the training and test accuracies close to, or only slightly below, the baseline AdamW results.
+
+
+\begin{figure}[t]
+  \centering
+\includegraphics[width=\linewidth]{figures/wwpgd_alpha_layers.png}\\[-0.35em]
+\includegraphics[width=\linewidth]{figures/wwpgd_accuracy_readable.png}
+\caption{\textbf{WW-PGD stabilizes layerwise HTSR exponents while preserving test accuracy.}
+A three-layer MNIST MLP is trained with AdamW alone or AdamW plus WW-PGD. Top: layerwise fitted HTSR exponents for FC1--FC3. Bottom: ordinary MNIST test accuracy. Curves show mean \(\pm\) standard deviation across five runs.}
+\label{fig:wwpgd_alpha_per_layer}
+\end{figure}
+
+The convergence to the RG optimal boundary is much faster than with Muon. This is the key takeaway.
+This makes WW-PGD a direct finite-step test of the spectral-RG optimizer hypothesis.
+
+
+\paragraph{Test 2: Fixing an anti-grokking checkpoint.}
+As a further stress test, we test whether WW-PGD can repair a deeply overfit checkpoint.
+Starting from an anti-grokking checkpoint shown in
+Figure~\ref{fig:rmt_v1_long}~\cite{PrakashMartinLateCollapse2026}, we resume training using AdamW, Muon, and WW-PGD.
+Figure~\ref{fig:ww_fixed_grok} depicts preliminary experiments~\cite{PrakashMartin2026Ongoing}, showing
+that the WW-PGD optimizer can recover the test accuracy even after long-horizon overfitting.
+
+Together, these two experiments provide preliminary evidence that WW-PGD repairs
+the overfit checkpoints tested here while driving all layer $\alpha_\ell(t)\simeq 2$.
+
+\begin{figure}[!h]
+  \centering
+\includegraphics[width=\linewidth]{figures/ww_fixed_grok.png}
+\caption{\textbf{WW-PGD corrects overfit layers.} Extending training on an anti-grokking checkpoint from Figure~\ref{fig:rmt_v1_long}.~\cite{PrakashMartin2026Ongoing}}
+\label{fig:ww_fixed_grok}
+\end{figure}
+
+
+\clearpage
+\section{Implications of Universality}
+\label{sec:implications}
+
+It is conjectured that neural networks, boosted trees, and related methods can be grouped under one universality story. They use different update rules, but each can induce an effective correlation structure on the data~\cite{GalluccioBouchaudPotters1998}. Figure~\ref{fig:rg-universality-flow} represents that structure by effective couplings $\widetilde g_i(\mu)$ that flow with RG scale $\mu$. The RG question is whether these spectra approach a common critical surface and candidate fixed point $g^\star$.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{figures/rg_universality_flow_rho.png}
+\caption{RG flow in the space of effective correlations. Different nonlinear learning algorithms follow different microscopic trajectories, but coarse-graining can suppress irrelevant directions and carry retained spectral structure toward a candidate fixed point. Candidate universal quantities are read off near the fixed point, not from the microscopic update rule.}
+\label{fig:rg-universality-flow}
+\end{figure}
+
+\begin{tcolorbox}[marginalbox,title=\textbf{Universality of learning algorithms}]
+Universality asks whether different nonlinear learners can flow to the same coarse-grained candidate spectral fixed point.
+\begin{itemize}
+\item Nonlinear learning algorithms can be linearized near their fixed points.
+\item Spectra, not parameters, may characterize the optimal conditions.
+\item Self-averaging bulk modes support transfer.
+\item Non-self-averaging modes reveal dominant atypical structure that causes overfitting.
+\item XGBoost is a conjectural test case.
+\end{itemize}
+\takeaway{RG universality means different algorithms may share a candidate fixed-point spectrum.}
+\end{tcolorbox}
+
+The RG claim is local. A learner can be nonlinear away from convergence. Near a stable endpoint, its coarse-grained flow can be linearized in a few spectral coordinates $\widetilde g_i$. In Figure~\ref{fig:rg-universality-flow}, the renormalized trajectories bend toward the same critical surface. The stable directions define the universality class, and the fixed point $g^\star$ defines the universal spectral observables.
+
+Near convergence, the invariant object is the spectrum of the retained correlation operator.
+Parameters change with architecture, but the proposed ERG point may be universal. A non-neural learner needs its own effective correlation operator. Universality becomes testable only after that operator and its $\widetilde g_i$ coordinates are defined.
+
+Self-averaging is another proposed natural universal property. The bulk spectral averages should stabilize across samples, initializations, and checkpoints.  Non-self-averaging modes should concentrate into a few dominant elements in the spectral tail.
+Tail modes are not automatically bad. They become risky when a few directions carry too much spectral energy gain,
+causing correlation traps to form and/or $\alpha < 2$.
+
+Neural networks give the direct case. Different depths, widths, initializations, and optimizers can produce similar endpoint spectra. The shared object is the normalized effective correlation spectrum. This view also reframes optimizer design. A good optimizer should reduce loss while steering the spectrum toward a self-averaging marginal boundary between
+optimality and overfitting, with $\alpha\simeq 2$ as a candidate universal spectral exponent.
+
+XGBoost gives a plausible extension~\cite{ChenGuestrin2016}. Boosting has no dense layer weight matrix, so the current layer-specific theory does not apply directly. Still, each tree changes the residuals and the prediction function. Those updates induce a data-data correlation structure in prediction space. A practical test would form a centered Gram operator from tree contributions or prediction increments, normalize its scale, and track its spectrum across boosting rounds.
+Early work (not shown) suggests this is possible. Future work will test this construction on XGBoost models.
+
+Universality does not say that all algorithms compute the same function. It says that successful learners may share the same coarse-grained spectral organization. Generalization would then depend less on update details and more on self-averaging, marginality, and controlling the dominant modes to prevent overfitting or collapse.
+More broadly, universality suggests transferability. In semi-empirical electronic-structure theory, transferable parameters work because different molecules can share the same effective valence-space structure. Martin and Freed tested this idea by deriving semiempirical $\pi$-electron parameters from ab initio effective valence-shell Hamiltonians and studying when those parameters transfer across related molecules \cite{MartinFreed1994I,Martin1996SchiffBases,Martin1996LargeSchiffBases}.
+The analogy is illustrative. The SETOL effective free energy $\IZQ$ is evaluated by taking a single step of the
+Wilsonian Exact RG (ERG) and is expressed in terms of the R-Transform of the layer, which is akin to a renormalized self-energy
+and analogous to the more general effective Hamiltonian approach.
+Moreover, if learned correlation spectra have candidate universal fixed-point structure, then spectral diagnostics may transfer across related models and tasks. Transferability would then come from the effective correlation space, not from the microscopic implementation.
+
+
+\clearpage
+\section{Conclusions}
+\label{sxn:conclusions}
+
+This paper proposes an RG theory of NN layer convergence, integrating the older phenomenological HTSR approach and the more recently developed
+SETOL theory. HTSR supplies the empirical fact: strong layers often develop heavy-tailed spectra near $\alpha\simeq2$. SETOL supplies the trace-log condition: remove arbitrary layer scale and study the retained effective correlation space. The main claim is that these two pictures meet at the same spectral endpoint.
+
+The value $\alpha=2$ has two meanings. Statistically, it marks the boundary between stable bulk-supported learning and domination by a few extreme eigencomponents. RG scale counting gives the same boundary. At $\alpha=2$, each logarithmic spectral shell contributes comparable spectral energy gain.
+This agreement makes $\alpha\simeq2$ a critical boundary, not just a fitted number.
+
+The fixed point is layerwise. Each dense layer has its own retained spectrum, trace-log scale, and dominant-tail burden. A trained network is therefore not one monolithic fixed point. It is a coordinated state in which many layers approach compatible spectral endpoints.
+
+The practical diagnostic is spectral. A good layer should keep useful correlation gain spread across many retained eigencomponents. A bad layer can concentrate too much gain in a few dominant tail modes. The trace-log condition removes scale. The power-law tail measures shape.
+The dominant-tail eigencomponents test whether the layer remains self-averaging.
+
+The optimizer message is nuanced.
+Raw optimizers can spend update norm on scale-only motion. A better optimizer should reduce loss while steering the retained spectrum toward the correlated, self-averaging branch. This view suggests why matrix-aware optimizers such as Muon are relevant. It also suggests new optimizer designs based on trace-log geometry.
+
+The \WW{} message becomes sharper. The HTSR exponent $\alpha$, the trace-log coordinate, ECS--tail alignment, trap counts,
+and the tail burden are not isolated heuristics.
+They can be read as candidate RG observables of the same layerwise spectral flow.
+They require the weights and the weights alone, without labels, gradients, or test or even training data.
+
+The empirical program is direct.
+Track these observables across checkpoints. Compare them across optimizers.
+Ask whether held-out performance improves when the spectrum approaches the
+marginal boundary and degrades when $\alpha<2$ and/or traps form.
+This turns the RG picture into a falsifiable diagnostic program.
+
+The limitations are also direct.
+This paper does not prove convergence of SGD, AdamW, or Muon to the spectral RG fixed point.
+It proposes an operational RG interpretation of retained layer spectra and connects that interpretation
+to HTSR and SETOL theory and validated empirical diagnostics.
+The evidence supports this picture on the models studied here, but it does not establish universality
+across all architectures, datasets, optimizers, or nonlinear learners.  This remains to be explored.
+
+The broader implication is transferability. Semi-empirical electronic-structure
+theory uses transferable parameters because related molecules share effective valence-space structure.
+The analogy here is direct. If learned correlation spectra have candidate universal fixed-point structure,
+then useful spectral parameters may transfer across related models, tasks, optimizers, and algorithm families.
+
+The final message is simple. Learning is not only loss minimization. Learning is spectral organization.
+In this picture, strong layers move toward a RG correlated fixed point where scale is removed, the tail is balanced, and the
+weights remain self-averaging.
+
+
+\begin{tcolorbox}[marginalbox,title=\textbf{The theory in one pass}]
+Dense layers learn by moving their spectra.
+\begin{itemize}
+\item HTSR observes heavy-tailed spectra near $\alpha\simeq2$.
+\item SETOL connects heavy-tailed layer spectra to model accuracy (called layer quality), and yields the ERG trace-log laws.
+\item Self-averaging helps explain why $\alpha=2$ is a useful boundary.
+\item RG scale counting explains why $\alpha=2$ is marginal, suggesting a candidate universal spectral exponent.
+\item Optimizers should reduce scale-only motion and move toward the ERG fixed point.
+\item The WW-PGD optimizer extension can repair overfit models.
+\item The theory may be extensible to XGBoost and related algorithms:
+  $\alpha=2$  and $\Tr{\log\tilde{\mathbf{X}}}=0$.
+\end{itemize}
+\takeaway{Keep the learned tail, remove its scale, and test whether the retained layer stays balanced.}
+\end{tcolorbox}
+
+Table~\ref{tab:notation-conventions} summarizes the notation and conventions used throughout.
+
+\section*{Acknowledgements}
+
+The author gratefully acknowledges Hari K. Prakash for valuable discussions, constructive feedback, guidance throughout this work, and for his help in developing the WW-PGD optimizer.
+
+\clearpage
+\onecolumn
+\thispagestyle{plain}
+\begin{center}
+\vspace*{-1.0em}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.04}
+\captionof{table}{Notation and conventions used in this report.}
+\label{tab:notation-conventions}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lll@{}}
+\toprule
+Group & Symbol & Meaning \\
+\midrule
+Layer & $\W\in\mathbb R^{N\times M}$, $N\ge M$ & Dense-layer weights. \\
+Layer & $\X=N^{-1}\W^T\W$ & Layer correlation operator. \\
+Layer & $\lambda_i>0$, $\Splus=\{i:\lambda_i>0\}$ & Positive spectral support. \\
+Layer & $\sigma(\W) = \sqrt{N\lambda(\X)}$, & Singular values of $\W$ (pre-rescaling). \\
+Layer & $\Tr{\X}=M$, & Frobenius rescaling. \\
+PL tail & $\rho_{\rm tail}(\lambda)\sim\lambda^{-\alpha}$ & HTSR tail; fitted exponent $\alpha$. \\
+PL tail & $\TPL$, $\TPL^\star$ & CSN-selected PL window. \\
+ECS & $\Rell\subseteq\Splus$, $\Mred=|\Rell|$ & Retained ECS and size. \\
+ECS & $\RECS^\star$ & Stabilized SETOL ECS. \\
+Alignment & $\RECS^\star\simeq\TPL^\star$ & SETOL--HTSR window match. \\
+Trace-log & $\XR=\U_{\Rell}^T\X\U_{\Rell}$ & ECS-restricted operator. \\
+Trace-log & $\Tr\log\Xtilde_{\Rell}=\sum_{i\in\Rell}\log\tilde{\lambda}_{\Rell,i}=0$ & Scale-invariant condition. \\
+Energy & $E_+=M^{-1}\Tr\Xtilde$ & Retained spectral energy   \\
+Energy & $\Ered=\Mred^{-1}\sum_{i\in\Rell}\tilde{\lambda}_{\Rell,i}=\int\tilde{\lambda}_{\Rell}\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})d\tilde{\lambda}_{\Rell}$ & Retained spectral energy. \\
+Tail & $\phi_k^R=\sum_{j=1}^k\tilde{\lambda}_{\Rell,R(j)}/\sum_{i\in\Rell}\tilde{\lambda}_{\Rell,i}$ & Top-$k$ gain fraction. \\
+Tail & $M_{\rm tr}^R=(\sum_{i\in\Rell}\tilde{\lambda}_{\Rell,i})^2/\sum_{i\in\Rell}\tilde{\lambda}_{\Rell,i}^2$ & Effective contributor count. \\
+Scale & $x=\log\tilde{\lambda}_{\Rell}$, $[\Lambda,b\Lambda]$ & Log coordinate and shell. \\
+Scale & $G_E(\Lambda,b)=\int_{\Lambda}^{b\Lambda}\tilde{\lambda}_{\Rell}\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})d\tilde{\lambda}_{\Rell}$ & Band energy gain. \\
+Scale & $\displaystyle g_E(\tilde{\lambda}_{\Rell})=\frac{\dd\Ered}{\dd\log\tilde{\lambda}_{\Rell}}=\tilde{\lambda}_{\Rell}^2\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})$;  & Spectral energy  gain per logarithmic scale. \\
+Beta & $\beta_E(g_E)=d g_E/d\log\tilde{\lambda}_{\Rell}=(2-\alpha)g_E$ & Leading PL scale derivative. \\
+Marginal & $y_E=2-\alpha=0$ & Log-band balance. \\
+Fixed point & $\Rell_{\rm RG}[\rho^\star]=\rho^\star$ & Normalized spectral fixed point. \\
+Branch & $\Fzero$, $\Ferg$ & RG spectral fixed points or branches. \\
+Branch & $\Fzero:g_E\ \text{undefined}$ & Trivial/random-like branch. \\
+Branch & $\Ferg:0<g_E^\star<\infty,\ \alpha\simeq2,\ \RECS^\star\simeq\TPL^\star$ & Empirical SETOL ERG fixed point or branch. \\
+Quality & $\overline Q_{\rm NN}$, $\overline Q_\ell$ & Model and layer quality. \\
+Optimizer & $A_{\Rell}=\U_{\Rell}\XR^{-1}\U_{\Rell}^T$, $G_T=\nabla_W T_{\Rell}$ & Trace-log gradient objects. \\
+Optimizer & $\Delta\W_\perp$ & Trace-log projected update. \\
+WW-PGD & $\Tell$, $m=|\Tell|$ & Selected tail and size. \\
+WW-PGD & $\tilde{\lambda}_k^\star=A k^{-q}$, $q=1$ & Rank-order tail target. \\
+WW-PGD & $\eta_B,\eta_C,h_e$ & Blend, Cayley, homotopy factors. \\
+\bottomrule
+\end{tabular}}
+\end{center}
+\clearpage
+
+\appendix
+\section{Optimizer experiment details}
+\label{app:optimizer_experiments}
+\small
+
+This appendix records the optimizer protocols. Both tests use MNIST and the same three-layer MLP, $784\rightarrow512\rightarrow512\rightarrow10$, with ReLU nonlinearities. The linear layers are logged as FC1--FC3. MNIST inputs use mean $0.1307$ and standard deviation $0.3081$. At checkpoints, \WW{} records the fitted HTSR exponent $\alpha$ and the tail diagnostics for each fully connected layer.
+
+\paragraph{Reproduction notebooks.}
+The Muon panel uses the public notebooks \href{https://github.com/CalculatedContent/WeightWatcher-Examples/blob/main/AdamWvsMuon.ipynb}{AdamWvsMuon.ipynb}, \href{https://github.com/CalculatedContent/WeightWatcher-Examples/blob/main/MLP3-MNIST-AdamW.ipynb}{MLP3-MNIST-AdamW.ipynb}, and \href{https://github.com/CalculatedContent/WeightWatcher-Examples/blob/main/MLP3-MNIST-Muon.ipynb}{MLP3-MNIST-Muon.ipynb}. The WW-PGD wrapper is reproduced from \href{https://github.com/CalculatedContent/WW_PGD/blob/main/WW_PGD_QuickStart.ipynb}{WW\_PGD\_QuickStart.ipynb}. The plotted curves use the settings below.
+
+\paragraph{Muon test.}
+The Muon test compares AdamW and Muon on the same model and data. AdamW gives the baseline trajectory. Muon is applied to matrix-valued hidden-layer updates. Scalar, bias, and other non-matrix parameters are handled by the associated base optimizer. The short-horizon panel tracks the early optimizer separation. The long-horizon panel tracks the slower Muon approach over hundreds of epochs. Training and test accuracy are logged with the layerwise curves $\alpha(t)$, $\ell\in\{\mathrm{FC1},\mathrm{FC2},\mathrm{FC3}\}$.
+
+\paragraph{WW-PGD test.}
+The WW-PGD test compares AdamW with AdamW+WW-PGD. The minibatch optimizer is fixed. The batch size is $128$. AdamW uses learning rate $10^{-3}$. Gradients are clipped to norm $1.0$. The main run uses $35$ epochs and five independent runs. At every epoch, \WW{} analyzes the model with \texttt{detX=True}, \texttt{randomize=False}, and \texttt{plot=False}. WW-PGD applies one epoch-boundary spectral retraction with \texttt{min\_tail}=5, $q=1$, $\eta_B=0.5$, $\eta_C=0.25$, \texttt{use\_detx=True}, \texttt{warmup\_epochs}=0, \texttt{ramp\_epochs}=5, and \texttt{enable\_trap\_pgd=False}.
+
+\paragraph{WW-PGD correction.}
+For each eligible layer, WW-PGD forms $\lambda_i=s_i^2$ and selects the retained tail from \WW{} diagnostics for $\tilde{\lambda}^{+}_{\rm PL}$ and $\tilde{\lambda}^{+}_{\Rell}$. It sorts the tail eigenvalues in decreasing order and uses the target $\tilde{\lambda}_k^\star=A k^{-1}$. The amplitude $A$ preserves the retained tail trace-log. The moved tail is recentered, reconstructed with the original singular vectors, and blended back into the post-AdamW layer. The standard test loader uses ordinary MNIST. The perturbed loader uses random rotation by $7^\circ$, random translation by $3\%$, small Gaussian blur, and no horizontal flip.
+
+\clearpage
+%\enlargethispage{3\baselineskip}
+\begin{thebibliography}{99}
+\footnotesize\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
+
+
+\bibitem{SilverAlphaGo2016}
+D.~Silver et al.,
+``Mastering the game of Go with deep neural networks and tree search,''
+\emph{Nature} \textbf{529}, 484--489, 2016.
+%DOI: 10.1038/nature16961.
+
+\bibitem{JumperAlphaFold2021}
+J.~Jumper et al.,
+``Highly accurate protein structure prediction with AlphaFold,''
+\emph{Nature} \textbf{596}, 583--589, 2021.
+%DOI: 10.1038/s41586-021-03819-2.
+
+\bibitem{BommasaniFoundationModels2021}
+R.~Bommasani et al.,
+``On the Opportunities and Risks of Foundation Models,''
+arXiv:2108.07258, 2021.
+
+\bibitem{Qwen25TechnicalReport2025}
+A.~Yang et al.,
+``Qwen2.5 Technical Report,''
+arXiv:2412.15115, 2025.
+
+\bibitem{OpenAIGPTOSS2025}
+OpenAI et al.,
+``gpt-oss-120b \& gpt-oss-20b Model Card,''
+arXiv:2508.10925, 2025.
+
+\bibitem{OpenAIGPT4TechnicalReport2023}
+OpenAI,
+``GPT-4 Technical Report,''
+arXiv:2303.08774, 2023.
+
+
+\bibitem{MartinMahoneyICML2019}
+M.~W. Mahoney and C.~H. Martin, ``Traditional and heavy-tailed self-regularization in neural network models,'' \emph{Proceedings of the 36th International Conference on Machine Learning}, PMLR 97:4284--4293, 2019; arXiv:1901.08276.
+
+\bibitem{MartinMahoneyJMLR2021}
+C.~H. Martin and M.~W. Mahoney, ``Implicit self-regularization in deep neural networks: Evidence from random matrix theory and implications for learning,'' \emph{Journal of Machine Learning Research} 22(165):1--73, 2021. \url{https://jmlr.org/papers/v22/20-410.html}.
+
+\bibitem{MartinPengMahoney2021}
+  C.~H. Martin, T.~S. Peng, and M.~W. Mahoney, ``Predicting trends in the quality of state-of-the-art neural networks without access to training or testing data,'' \emph{Nature Communications} 12, 4122, 2021. DOI: 10.1038/s41467-021-24025-8.
+
+\bibitem{MartinMahoney2020SDM}
+C.~H. Martin and M.~W. Mahoney,
+``Heavy-Tailed Universality Predicts Trends in Test Accuracies for Very Large Pre-Trained Deep Neural Networks,''
+in \emph{Proceedings of the 2020 SIAM International Conference on Data Mining},
+SIAM, 2020, pp.~505--513.
+doi: \texttt{10.1137/1.9781611976236.57}.
+
+\bibitem{MartinHinrichsSETOL2025}
+C.~H. Martin and C.~Hinrichs, ``SETOL: A semi-empirical theory of (deep) learning,'' arXiv:2507.17912, 2025.
+
+\bibitem{PrakashMartinTraps2026}
+H.~K. Prakash and C.~H. Martin, ``Detecting overfitting in neural networks during long-horizon grokking using random matrix theory,'' arXiv:2605.12394, 2026.
+
+
+\bibitem{PrakashMartinLateCollapse2026}
+H.~K. Prakash and C.~H. Martin, ``Late-stage generalization collapse in grokking: Detecting anti-grokking with WeightWatcher,'' arXiv:2602.02859, 2026.
+
+\bibitem{WeightWatcherTool}
+  C.~H. Martin, ``WeightWatcher: An open-source diagnostic tool for deep neural networks,'' GitHub repository, \url{https://github.com/CalculatedContent/WeightWatcher}.
+
+\bibitem{PrakashMartin2026Ongoing}
+H.~K. Prakash and C.~H. Martin,
+``WW-PGD Repair of Overfit and Anti-Grokking Models,''
+work in progress, 2026.
+
+\bibitem{MarchenkoPastur1967}
+V. A. Marchenko and L. A. Pastur,
+``Distribution of eigenvalues for some sets of random matrices,''
+\emph{Mathematics of the USSR-Sbornik} 1, 457--483, 1967. DOI: 10.1070/SM1967v001n04ABEH001994.
+
+\bibitem{TracyWidom1996}
+C. A. Tracy and H. Widom,
+``On orthogonal and symplectic matrix ensembles,''
+\emph{Communications in Mathematical Physics} 177, 727--754, 1996. DOI: 10.1007/BF02099545; arXiv:solv-int/9509007.
+
+\bibitem{BaikBenArousPeche2005}
+J.~Baik, G.~Ben Arous, and S.~P\'ech\'e,
+``Phase transition of the largest eigenvalue for nonnull complex sample covariance matrices,''
+\emph{The Annals of Probability} \textbf{33}(5), 1643--1697, 2005.
+DOI: 10.1214/009117905000000233.
+
+\bibitem{SeungSompolinskyTishby1992}
+H. S. Seung, H. Sompolinsky, and N. Tishby,
+``Statistical mechanics of learning from examples,''
+\emph{Physical Review A} 45, 6056--6091, 1992.
+DOI: 10.1103/PhysRevA.45.6056.
+
+\bibitem{CizeauBouchaud1994}
+P.~Cizeau and J.-P. Bouchaud, ``Theory of L\'evy matrices,'' \emph{Physical Review E} 50, 1810--1822, 1994. DOI: 10.1103/PhysRevE.50.1810.
+
+\bibitem{PottersBouchaud2020}
+M.~Potters and J.-P.~Bouchaud, \emph{A First Course in Random Matrix Theory: For Physicists, Engineers and Data Scientists}, Cambridge University Press, 2020.
+
+\bibitem{GalluccioBouchaudPotters1998}
+S.~Galluccio, J.-P.~Bouchaud, and M.~Potters, ``Rational decisions, random matrices and spin glasses,'' \emph{Physica A} 259, 449--456, 1998. DOI: 10.1016/S0378-4371(98)00332-X; arXiv:cond-mat/9801209.
+
+\bibitem{Zee1996}
+A.~Zee, ``Law of addition in random matrix theory,'' \emph{Nuclear Physics B} 474, 726--744, 1996. DOI: 10.1016/0550-3213(96)00276-3; arXiv:cond-mat/9602146.
+
+\bibitem{WilsonKogut1974}
+K. G. Wilson and J. B. Kogut, ``The renormalization group and the epsilon expansion,'' \emph{Physics Reports} 12, 75--199, 1974. DOI: 10.1016/0370-1573(74)90023-4.
+
+\bibitem{Polchinski1984}
+J.~Polchinski, ``Renormalization and effective Lagrangians,'' \emph{Nuclear Physics B} 231, 269--295, 1984. DOI: 10.1016/0550-3213(84)90287-6.
+
+\bibitem{Clauset2009}
+A.~Clauset, C.~R. Shalizi, and M.~E.~J. Newman, ``Power-law distributions in empirical data,'' \emph{SIAM Review} 51, 661--703, 2009. DOI: 10.1137/070710111.
+
+\bibitem{LoshchilovHutter2019}
+I.~Loshchilov and F.~Hutter, ``Decoupled weight decay regularization,'' \emph{International Conference on Learning Representations}, 2019; arXiv:1711.05101.
+
+\bibitem{JordanMuon2024}
+K.~Jordan, Y.~Jin, V.~Boza, J.~You, F.~Cesista, L.~Newhouse, and J.~Bernstein, ``Muon: An optimizer for hidden layers in neural networks,'' online technical note, 2024, URL: \url{https://kellerjordan.github.io/posts/muon/}.
+
+\bibitem{LiuMuonScalable2025}
+J.~Liu et al., ``Muon is scalable for LLM training,'' arXiv:2502.16982, 2025.
+
+\bibitem{BernsteinNewhouse2025}
+J.~Bernstein and L.~Newhouse, ``Modular Duality in Deep Learning,'' in \emph{Proceedings of the 42nd International Conference on Machine Learning}, PMLR 267:3920--3930, 2025; arXiv:2410.21265.
+
+\bibitem{MartinFreed1994I}
+C.~H. Martin and K.~F. Freed,
+``Ab initio computation of semiempirical $\pi$-electron methods. I.
+Constrained, transferable valence spaces in $\mathcal H^\nu$ calculations,''
+\emph{Journal of Chemical Physics} \textbf{100}, 7454--7470, 1994.
+DOI: 10.1063/1.466889.
+
+\bibitem{Martin1996SchiffBases}
+C.~H. Martin,
+``Highly accurate ab initio $\pi$-electron Hamiltonians for small protonated Schiff bases,''
+\emph{Journal of Physical Chemistry} \textbf{100}, 14310--14315, 1996.
+DOI: 10.1021/jp960617w.
+
+\bibitem{Martin1996LargeSchiffBases}
+C.~H. Martin,
+``Redesigning semiempirical-like $\pi$-electron theory with second order effective valence shell Hamiltonian ($H^\nu$) theory: Application to large protonated Schiff bases,''
+\emph{Chemical Physics Letters} \textbf{257}, 229--237, 1996.
+DOI: 10.1016/0009-2614(96)00548-9.
+
+\bibitem{ChenGuestrin2016}
+T. Chen and C. Guestrin,
+``XGBoost: A scalable tree boosting system,''
+in \emph{Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining},
+785--794, 2016. DOI: 10.1145/2939672.2939785; arXiv:1603.02754.
+
+\bibitem{WisemanDomany1995}
+S.~Wiseman and E.~Domany,
+``Lack of self-averaging in critical disordered systems,''
+\emph{Physical Review E} \textbf{52}, 3469--3484, 1995.
+DOI: 10.1103/PhysRevE.52.3469.
+
+\bibitem{aharony1996}
+A. Aharony and A. B. Harris,
+``Absence of Self-Averaging and Universal Fluctuations in Random Systems near Critical Points,''
+\emph{Physical Review Letters} \textbf{77}, 3700--3703 (1996).
+\href{https://doi.org/10.1103/PhysRevLett.77.3700}{doi:10.1103/PhysRevLett.77.3700}.
+
+\bibitem{wiseman1998}
+S. Wiseman and E. Domany,
+``Finite-Size Scaling and Lack of Self-Averaging in Critical Disordered Systems,''
+\emph{Physical Review Letters} \textbf{81}, 22--25 (1998).
+\href{https://doi.org/10.1103/PhysRevLett.81.22}{doi:10.1103/PhysRevLett.81.22}.
+
+\bibitem{JordanBlog}
+K.~Jordan, ``Muon: An optimizer for hidden layers in neural networks,''
+Keller Jordan blog, Dec.~8, 2024. [Online]. Available:
+\url{https://kellerjordan.github.io/posts/muon/}.
+
+\bibitem{Wegner}
+F.~J. Wegner,
+``Some invariance properties of the renormalization group,''
+\emph{Journal of Physics C: Solid State Physics} \textbf{7}, no.~12,
+2098--2108 (1974).
+doi:10.1088/0022-3719/7/12/004.
+
+\bibitem{Polchinski}
+J.~Polchinski,
+``Renormalization and effective lagrangians,''
+\emph{Nuclear Physics B} \textbf{231}, no.~2,
+269--295 (1984).
+doi:10.1016/0550-3213(84)90287-6.
+
+
+\end{thebibliography}
+
+
+
+
+\end{document}

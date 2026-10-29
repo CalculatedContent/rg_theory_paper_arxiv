@@ -1,0 +1,104 @@
+\subsection{Removing Redundant RG Directions}
+\label{sxn:redundant_rg_directions}
+
+A Wilsonian RG flow is a flow on equivalence classes, not on every microscopic coordinate. Field redefinitions, coordinate changes, and normalization conventions can move the representative of a theory without changing its long-distance content. These motions are the \emph{redundant directions} of RG theory. They are distinct from irrelevant directions: an irrelevant perturbation changes the theory but decays under coarse graining, whereas a redundant perturbation changes only its description. In the retained spectral description, the physical state is therefore the trace-log-gauge-fixed ECS modulo transformations that leave its quotient spectral shape unchanged.
+
+For a small displacement $\delta\W$, two redundancies are relevant:
+\begin{itemize}
+\item \textbf{Trace-log (volume) drift.} The update changes the retained product scale and leaves the chosen gauge slice, while leaving the normalized spectral shape essentially unchanged.
+\item \textbf{Isospectral coordinate motion.} The update changes retained coordinates by an orthogonal similarity transformation without changing the retained eigenvalue multiset.
+\end{itemize}
+The remaining component is the candidate physical RG motion: it can redistribute spectral mass, change the tail burden, or change the fitted exponent $\alpha$.
+
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm,>=Latex,scale=.77,transform shape]
+  \path[draw=gray!70,fill=gray!10,rounded corners=7pt]
+    (-2.65,1.0) .. controls (-1.3,1.65) and (1.25,1.55) .. (2.65,1.05)
+    -- (2.45,-.05) .. controls (1.0,-.45) and (-1.0,-.45) .. (-2.45,-.05) -- cycle;
+  \node[font=\scriptsize,align=center] at (0,-.15) {quotient spectral space\\modulo redundant transformations};
+  \fill[boxblue] (-1.65,.66) circle (2.2pt);
+  \node[font=\scriptsize,anchor=east] at (-1.77,.66) {current state};
+  \draw[very thick,boxblue,->] (-1.58,.72) .. controls (-.6,1.2) and (.6,1.15) .. (1.38,.72);
+  \node[font=\scriptsize,boxblue,align=center] at (0,1.32) {physical RG flow\\after quotient projection};
+  \draw[thick,dashed,->] (-1.55,.62) -- (1.38,.62);
+  \draw[boxblue,thick] (1.62,.65) circle (7pt);
+  \draw[boxblue,thick] (1.62,.65) circle (3.5pt);
+  \node[font=\scriptsize,anchor=west,align=left] at (1.92,.65) {correlated\\fixed point $\Ferg$};
+  \path[draw=red!75!black,dashed,fill=red!9] (-2.4,-1.52) ellipse (2.15 and .36);
+  \fill (-.15,-1.52) circle (2pt);
+  \node[font=\scriptsize,anchor=west] at (0.05,-1.52) {$\Fzero$: Gaussian branch};
+  \foreach \x in {-1.6,-1.05,-.5,.05,.6} {
+    \draw[red!75!black,dashed,->] (-1.58,.55) .. controls (\x,-.15) and (\x,-.7) .. (\x,-1.25);
+  }
+  \node[font=\scriptsize,red!75!black,align=center] at (-2.45,-.65) {redundant\\directions};
+\end{tikzpicture}
+\vspace{-0.6em}
+\captionof{figure}{\textbf{Redundant directions in the spectral RG flow.} A raw update contains physical and redundant components. Projection by $\mathbf I-\Pred$ removes motion inside the redundant fiber and leaves the quotient-space flow toward $\Ferg$.}
+\label{fig:rg_redundant_flow_abstract}
+\end{center}
+\vspace{-0.25em}
+
+Let the abstract coarse-graining map be
+\begin{equation}
+  \Pi_{\rm RG}:\W\longmapsto[\Xtilde_{\Rell}],
+\end{equation}
+where brackets denote the equivalence class after gauge fixing. A redundant direction $\mathbf Z$ lies in the kernel of the linearized map,
+\begin{equation}
+  D\Pi_{\rm RG}(\W)[\mathbf Z]=0.
+\end{equation}
+Thus every infinitesimal update decomposes as
+\begin{equation}
+  \delta\W=\delta\W_{\rm phys}+\delta\W_{\rm red},
+  \qquad \delta\W_{\rm red}\in\ker D\Pi_{\rm RG}(\W),
+\end{equation}
+and the quotient representative is
+\begin{equation}
+  \delta\W_{\rm RG}=(\mathbf I-\Pred)\delta\W.
+\end{equation}
+By construction, this removal must preserve the physical infinitesimal motion,
+\begin{equation}
+  D\Pi_{\rm RG}(\W)[\delta\W_{\rm RG}]
+  =D\Pi_{\rm RG}(\W)[\delta\W].
+\end{equation}
+
+The trace-log condition provides a convenient gauge slice,
+\begin{equation}
+  T_{\Rell}(\W):=\Tr\log\Xtilde_{\Rell}=0.
+\end{equation}
+A projected vector must remain tangent to this slice to first order,
+\begin{equation}
+  DT_{\Rell}(\W)[\delta\W_{\rm RG}]=0,
+\end{equation}
+or equivalently $T_{\Rell}(\W+\epsilon\delta\W_{\rm RG})=O(\epsilon^2)$. This removes scale drift normal to the slice, but it is not the full quotient condition: retained-coordinate transformations can satisfy $DT_{\Rell}=0$ and still be redundant. Abstractly, if $\{\mathbf Z_\mu\}$ spans the chosen redundant subspace and
+\begin{equation}
+  H_{\mu\nu}=\langle\mathbf Z_\mu,\mathbf Z_\nu\rangle_F,
+\end{equation}
+then the local orthogonal projector is
+\begin{equation}
+  \Pred\delta\W
+  =\sum_{\mu,\nu}\mathbf Z_\mu(H^{\dagger})_{\mu\nu}
+    \langle\mathbf Z_\nu,\delta\W\rangle_F.
+\end{equation}
+Writing $\mathbf G_T:=\nabla_{\W}T_{\Rell}$, the normal trace-log component is
+\begin{equation}
+  \delta\W_{\log}
+  =\frac{\langle\delta\W,\mathbf G_T\rangle_F}
+  {\langle\mathbf G_T,\mathbf G_T\rangle_F}\,\mathbf G_T.
+\end{equation}
+Subtracting it produces a vector tangent to the gauge slice. This is necessary but not sufficient. If retained coordinates are rotated by
+\begin{equation}
+  \mathbf O(\epsilon)=e^{\epsilon\mathbf A},
+  \qquad \mathbf A^{\top}=-\mathbf A,
+\end{equation}
+then
+\begin{equation}
+  \Xtilde_{\Rell}\longmapsto
+  \mathbf O(\epsilon)^{\top}\Xtilde_{\Rell}\mathbf O(\epsilon),
+  \qquad
+  \delta\Xtilde_{\Rell}=[\Xtilde_{\Rell},\mathbf A].
+\end{equation}
+This motion preserves both $\operatorname{spec}(\Xtilde_{\Rell})$ and $T_{\Rell}$, so it lies inside the gauge slice while remaining redundant. The quotient projector must therefore remove both the normal scale direction and the selected tangent generators of these isospectral orbits.
+
+The interpretation is geometric. The trace-log condition chooses a local section through a bundle of equivalent spectral descriptions; $\Pred$ removes the vertical component of the raw vector field; and $\delta\W_{\rm RG}$ is its horizontal representative. Fixed points should consequently be defined in the quotient: a representative may continue to move by a redundant transformation even when its physical RG state has stopped evolving. Conversely, satisfying $T_{\Rell}=0$ does not by itself identify a fixed point, because substantial physical shape flow can remain tangent to that slice.
+
+This subsection states only that RG geometry. A finite optimizer step generally leaves the slice at second order and can change the retained support. It therefore requires a retraction, damping, acceptance safeguards, and recomputation of the ECS. Those implementation choices, including how the redundant basis is approximated without overwhelming the supervised optimizer trajectory, are deferred to Section~6.

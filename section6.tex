@@ -1,0 +1,508 @@
+\section{Optimizer Extensions}
+\label{sxn:better_optimizers}
+
+
+The base optimizer supplies the supervised training trajectory. The RG construction does not replace that dynamics; it acts on the completed optimizer step and nudges only the retained spectral coordinates associated with redundant RG motion. Any correction should therefore remain local, damped, and subordinate to the loss-driven update.
+
+\begin{tcolorbox}[
+  marginalbox,
+  title=RG-aware correction,
+  left=1.6mm,right=1.6mm,top=1.1mm,bottom=1.1mm,
+  before skip=4pt,after skip=5pt
+]
+For each proposed optimizer update $\Delta\W_t$, select the working ECS
+(i.e by the midpoint rule)
+\eqtight{
+  M_{\Rell_t}
+  =
+  \left\lfloor
+  \frac{M_{{\rm PL},t}+M_{{\rm TL},t}}{2}
+  \right\rfloor,
+  \qquad
+  \Rell_t=\{(1),\ldots,(M_{\Rell_t})\}.
+}
+Use the off-gauge residual
+\eqtight{
+  T_t(\W_t)
+  =
+  \Tr\log\overline{\X}_{\Rell_t}(\W_t)
+}
+to nudge the proposed update toward
+\eqtight{
+  \Tr\log\Xtilde_{\Rell_t}=0,
+  \qquad
+  \alpha_{\Rell_t}=2,
+}
+and remove redundent isospectral motion
+\eqtight{
+  \overline{\X}_{\Rell_t}
+  \longmapsto
+  \mathbf O^{\top}\overline{\X}_{\Rell_t}\mathbf O,
+  \qquad
+  \mathbf O(\epsilon)=e^{\epsilon\mathbf A},
+  \qquad
+  \mathbf A^{\top}=-\mathbf A.
+}
+Nudge the optimizer trajectory toward the RG flow.
+\end{tcolorbox}
+
+
+The construction summarized above has three parts. First, we select a working retained space between the trace-log ECS boundary and the fitted power-law boundary. The midpoint rule is a conservative finite-size choice: it avoids relying on either noisy boundary alone while retaining modes that are plausibly both correlated and described by the fitted tail. Second, the off-gauge trace-log residual measures motion in the retained log-volume direction. Contraction along this direction drives the correlated sector back toward the weak-tail trivial fixed point $\Fzero$; suppressing that component prevents this redundant return flow, while the spectral shape is nudged toward the marginal state $\alpha=2$. Finally, one would also like to remove isospectral rotations within the retained space. This step is harder because a rotation that leaves one layer's ESD unchanged need not leave the full network function unchanged unless neighboring layers transform compatibly.
+
+The first operation is a one-dimensional projection fixed by the trace-log.  The second is a larger quotient-space problem: an isospectral rotation of one layer is not automatically redundant for the complete network.
+
+\subsection{RG-guided optimizer flow}
+\label{sxn:optimizer_general}
+
+Let the base optimizer propose
+\begin{equation}
+  \widehat\W_{t+1}
+  =
+  \operatorname{Proposal}_t(\W_t,\mathcal H_t),
+  \qquad
+  \Delta\W_t=\widehat\W_{t+1}-\W_t,
+  \label{eq:base_optimizer_proposal}
+\end{equation}
+where $\mathcal H_t$ is its internal state.  The RG extension acts on this finite displacement after momentum, preconditioning, clipping, weight decay, and the other microscopic optimizer rules have already been applied.  Its purpose is not to replace the supervised optimizer, but to nudge the proposed displacement and the resulting optimizer trajectory toward the candidate spectral RG flow.
+
+\paragraph{1. Select a working ECS and measure its off-gauge trace-log.}
+At step $t$, select a working ECS candidate $\Rell_t$ from the spectrum of the current layer (or, in a finite-step implementation, from the base proposal), and let $\mathbf V_{\Rell_t}$ contain its retained right singular vectors.  This selection identifies the retained space on which the RG diagnostic is evaluated.  It does \emph{not} assert that the retained operator already satisfies the trace-log condition.  During the local differential calculation, $\Rell_t$ and $\mathbf V_{\Rell_t}$ are held fixed.  The equations below linearize at $\W_t$; a post-proposal implementation may instead evaluate the same residual and gradient at $\widehat\W_{t+1}$.  Neither choice assumes that the evaluated state lies on the trace-log target.
+
+Define the pre-gauge retained operator
+\begin{equation}
+  \overline{\X}_{\Rell_t}(\W)
+  :=
+  \mathbf V_{\Rell_t}^{\top}
+  \left(\frac{1}{N}\W^{\top}\W\right)
+  \mathbf V_{\Rell_t},
+  \qquad
+  M_{\Rell_t}=|\Rell_t|,
+  \label{eq:optimizer_raw_retained_operator}
+\end{equation}
+and its trace-log residual
+\begin{equation}
+  T_t(\W)
+  :=
+  \Tr\log\overline{\X}_{\Rell_t}(\W),
+  \qquad
+  \mathcal G_t
+  :=
+  \{\W:T_t(\W)=0\}.
+  \label{eq:optimizer_trace_log_coordinate}
+\end{equation}
+The set $\mathcal G_t$ is the candidate trace-log target for the fixed working support.  The actual retained state generally lies off this target:
+$T_t(\W_t)$ and $T_t(\widehat\W_{t+1})$ need not vanish.  Their nonzero values are the control signal used to measure how the external optimizer trajectory departs from the proposed RG flow.
+
+Writing
+\begin{equation}
+  \mathbf G_{T,t}
+  :=
+  \nabla_{\W}T_t(\W_t),
+  \label{eq:optimizer_trace_log_normal}
+\end{equation}
+the fixed-support gradient is
+\begin{equation}
+  \mathbf G_{T,t}
+  =
+  \frac{2}{N}\,
+  \W_t\mathbf V_{\Rell_t}
+  \overline{\X}_{\Rell_t}(\W_t)^{-1}
+  \mathbf V_{\Rell_t}^{\top},
+  \label{eq:optimizer_trace_log_gradient_explicit}
+\end{equation}
+provided the retained operator is positive definite.  Because $\overline{\X}_{\Rell_t}$ is the pre-gauge operator rather than a pointwise normalized one, $T_t$ is not identically zero and $\mathbf G_{T,t}$ is generally nonzero.  If $\langle\mathbf G_{T,t},\mathbf G_{T,t}\rangle_F$ falls below a numerical tolerance, the correction is skipped or regularized.
+
+\paragraph{2. Nudge the proposed update toward the trace-log target.}
+Let
+\begin{equation}
+  d_t
+  :=
+  DT_t(\W_t)[\Delta\W_t]
+  =
+  \langle\mathbf G_{T,t},\Delta\W_t\rangle_F.
+  \label{eq:optimizer_trace_log_directional_derivative}
+\end{equation}
+A tangent projection would impose $DT_t[\Delta\W]=0$ and would therefore preserve the current residual to first order.  That is not the desired operation when $T_t(\W_t)\neq0$.  Instead, choose a tracking rate $0\leq\gamma_{T,t}\leq1$ and replace the normal component of the base update by a component that reduces the current residual:
+\begin{equation}
+\begin{aligned}
+  \Delta\W_t^{\rm track}
+  &:=
+  \Delta\W_t
+  -
+  \frac{
+    d_t+\gamma_{T,t}T_t(\W_t)
+  }{
+    \langle\mathbf G_{T,t},\mathbf G_{T,t}\rangle_F
+  }
+  \mathbf G_{T,t},\\
+  DT_t(\W_t)[\Delta\W_t^{\rm track}]
+  &=-\gamma_{T,t}T_t(\W_t).
+\end{aligned}
+  \label{eq:minimal_trace_log_projection}
+\end{equation}
+Thus the correction does not assume that the current retained ECS is already on the trace-log surface.  It uses the off-gauge residual to steer the optimizer trajectory toward that surface.  When $T_t(\W_t)=0$, Eq.~\eqref{eq:minimal_trace_log_projection} reduces to the ordinary tangent projection as a limiting case.
+
+Early in training it may be preferable to use only a one-sided branch-protection rule rather than active tracking.  With
+\begin{equation}
+  a_t=
+  \frac{d_t}
+       {\langle\mathbf G_{T,t},\mathbf G_{T,t}\rangle_F},
+  \qquad
+  a_t^-:=\min(a_t,0),
+  \label{eq:one_sided_volume_coefficient}
+\end{equation}
+use
+\begin{equation}
+  \Delta\W_t^{\not\rightarrow\Fzero}
+  =\Delta\W_t-a_t^-\mathbf G_{T,t}.
+  \label{eq:one_sided_volume_projection}
+\end{equation}
+This cancels only first-order contraction of the retained log-volume; updates that expand it are unchanged.  It is a safeguard against motion toward $\Fzero$, not an assertion that $T_t=0$.
+
+\paragraph{3. Remove only validated isospectral coordinate motion.}
+The trace-log correction above is a steering term.  It should be distinguished from quotienting genuinely redundant coordinate motion.
+Let $\mathbf A^{\top}=-\mathbf A$ and $\mathbf O(\epsilon)=e^{\epsilon\mathbf A}$.  Then
+\begin{equation}
+  \overline{\X}_{\Rell_t}
+  \longmapsto
+  \mathbf O(\epsilon)^{\top}
+  \overline{\X}_{\Rell_t}
+  \mathbf O(\epsilon),
+  \qquad
+  \delta\overline{\X}_{\Rell_t}
+  =[\overline{\X}_{\Rell_t},\mathbf A].
+  \label{eq:optimizer_isospectral_orbit}
+\end{equation}
+This motion preserves the retained eigenvalues, the ESD, and $T_t$, whether or not $T_t$ is zero.  It is therefore tangent to a fixed trace-log level set.  Removing it requires tangent generators in addition to the scalar trace-log tracking correction.
+
+For a selected weight-space basis $\{\mathbf Z_{A_j,t}\}_{j=1}^{m_t}$ of candidate isospectral generators, define
+\begin{align}
+  H_{ij,t}
+  &=\langle\mathbf Z_{A_i,t},\mathbf Z_{A_j,t}\rangle_F,
+  \notag\\[-0.2em]
+  \mathbf P_{{\rm iso},t}\Delta\W
+  &=
+  \sum_{i,j=1}^{m_t}
+  \mathbf Z_{A_i,t}(H_t^+)_{ij}
+  \langle\mathbf Z_{A_j,t},\Delta\W\rangle_F.
+  \label{eq:optimizer_full_projector}
+\end{align}
+The RG-nudged update is then
+\begin{equation}
+  \Delta\W_t^{\rm RG}
+  =
+  (\mathbf I-\mathbf P_{{\rm iso},t})
+  \Delta\W_t^{\rm track}.
+  \label{eq:operational_projected_update}
+\end{equation}
+Because an exact isospectral generator satisfies
+$DT_t(\W_t)[\mathbf Z_{A_j,t}]=0$, this quotient step preserves the first-order trace-log tracking condition in Eq.~\eqref{eq:minimal_trace_log_projection}.
+
+This construction is potentially implementable, but harder for three reasons.  The full isospectral tangent space has dimension $M_{\Rell_t}(M_{\Rell_t}-1)/2$; its generators can be nearly dependent; and rotating the retained coordinates of one layer generally changes the inputs presented to the next layer.  Such a direction is redundant for the network only when neighboring layers transform compatibly or a direct functional test shows that the network output is unchanged.  A practical approximation therefore samples only a small, well-conditioned family with
+\begin{equation}
+  m_t\ll M_{\Rell_t}^{2},
+  \label{eq:sampled_redundant_basis}
+\end{equation}
+and retains only generators whose effect is stable under resampling.
+
+The tangent part needs an additional network-level test.  An ESD regards retained rotations as equivalent, but the full network generally does not: a right-coordinate rotation of one layer changes the coordinates passed to the next.  A sampled generator should therefore be paired with a compensating neighboring-layer transformation or rejected unless, on a small calibration batch $\{x\}$,
+\begin{equation}
+  \frac{
+    \|f_{\W+\epsilon\mathbf Z_{A,t}}(x)-f_{\W}(x)\|
+  }{
+    \epsilon\|\mathbf Z_{A,t}\|_F
+  }
+  \leq\varepsilon_{\rm func}.
+  \label{eq:functional_redundancy_test}
+\end{equation}
+Only generators that pass this functional check should enter the sampled projector.
+
+\paragraph{4. Take a finite step, measure the residual, and optionally retract partway.}
+A damped finite candidate is
+\begin{equation}
+  \W_{t+1}^{\rm cand}
+  =
+  \W_t+\rho_t\Delta\W_t^{\rm RG},
+  \qquad 0<\rho_t\leq1.
+  \label{eq:damped_projected_candidate}
+\end{equation}
+For the fixed working support, define the base and corrected residuals
+\begin{equation}
+  \tau_t^{\rm base}
+  :=T_t(\widehat\W_{t+1}),
+  \qquad
+  \tau_t^{\rm cand}
+  :=T_t(\W_{t+1}^{\rm cand}).
+  \label{eq:finite_trace_log_residual}
+\end{equation}
+The corrected residual is generally nonzero.  Indeed, that is expected away from the endpoint: the purpose of the extension is to nudge the optimizer trajectory toward the RG target, not to assume that every intermediate retained ECS already lies on it.  At fixed support, the first-order relation is
+\begin{equation}
+  T_t(\W_{t+1}^{\rm cand})
+  =
+  \bigl(1-\rho_t\gamma_{T,t}\bigr)T_t(\W_t)
+  +\mathcal O(\rho_t^2).
+  \label{eq:trace_log_tracking_rate}
+\end{equation}
+
+If a finite spectral restoration is desired, let $\overline\lambda_i$ denote the retained eigenvalues of $\overline{\X}_{\Rell_t}(\W_{t+1}^{\rm cand})$ and define
+\begin{equation}
+\begin{aligned}
+  \X_{\Rell_t}^{(\kappa_t)}
+  &:={}
+  \exp\!\left(
+    -\kappa_t\frac{\tau_t^{\rm cand}}{M_{\Rell_t}}
+  \right)
+  \overline{\X}_{\Rell_t}(\W_{t+1}^{\rm cand}),\\
+  \lambda_i^{(\kappa_t)}
+  &:={}
+  \overline\lambda_i
+  \exp\!\left(
+    -\kappa_t\frac{\tau_t^{\rm cand}}{M_{\Rell_t}}
+  \right),
+  \qquad 0\leq\kappa_t\leq1.
+\end{aligned}
+  \label{eq:partial_trace_log_restore}
+\end{equation}
+Then
+\begin{equation}
+  \Tr\log\X_{\Rell_t}^{(\kappa_t)}
+  =
+  (1-\kappa_t)\tau_t^{\rm cand}.
+  \label{eq:partial_trace_log_residual}
+\end{equation}
+Thus $\kappa_t<1$ is a partial nudge and does not place the actual retained operator on the trace-log surface.  Only the exact retraction $\kappa_t=1$ produces the gauge-fixed representative, for which one may write
+\begin{equation}
+  \Xtilde_{\Rell_t}
+  :=
+  \X_{\Rell_t}^{(1)},
+  \qquad
+  \Tr\log\Xtilde_{\Rell_t}=0.
+  \label{eq:exact_trace_log_retraction}
+\end{equation}
+The tilde is therefore reserved for the result of an exact retraction (or the limiting fixed-point representative), not for the pre-gauge operator that is differentiated during training.
+
+After the finite correction, the ECS is recomputed.  Define the post-correction raw residual on the recomputed support by
+\begin{equation}
+  \tau_t^+
+  :=
+  \Tr\log\overline{\X}_{\Rell_t^+}(\W_{t+1}^{\rm cand}).
+  \label{eq:recomputed_trace_log_residual}
+\end{equation}
+The correction should be accepted only when it remains local.  For minibatch loss $L_t$ and recomputed support $\Rell_t^+$, useful checks are
+\begin{equation}
+\begin{split}
+  L_t(\W_{t+1}^{\rm cand})
+  &\leq L_t(\widehat\W_{t+1})+\delta_{L,t},\\
+  \frac{|\Rell_t^+\cap\Rell_t|}
+       {|\Rell_t^+\cup\Rell_t|}
+  &\geq s_{\min},
+  \qquad
+  |\tau_t^+|\leq|\tau_t^{\rm base}|+\delta_{T,t}.
+\end{split}
+\label{eq:optimizer_acceptance_tests}
+\end{equation}
+Failure of any test reduces $\rho_t$, $\gamma_{T,t}$, or $\kappa_t$, or skips the RG correction.  These safeguards prevent the spectral nudge from overwhelming supervised descent or jumping across a moving ECS boundary.
+
+Operationally, the proposed extension is
+\begin{equation}
+\begin{aligned}
+  \text{Propose}
+  &\rightarrow \text{select }\Rell_t
+  \rightarrow \text{measure }T_t,\\[-0.15em]
+  &\rightarrow \text{nudge}
+  \rightarrow \text{validated quotient}
+  \rightarrow \text{recompute}.
+\end{aligned}
+  \label{eq:optimizer_pipeline}
+\end{equation}
+The target surface must not be confused with the actual retained ECS encountered along training.  At a generic optimizer step,
+\begin{equation}
+  \Tr\log\overline{\X}_{\Rell_t}(\W_t)\neq0
+  \qquad\text{in general}.
+  \label{eq:actual_ecs_off_gauge}
+\end{equation}
+That nonzero residual is the point of the construction: it tells the RG extension how to alter $\Delta\W_t$ so that the external optimizer trajectory moves toward, rather than being assumed to lie on, the candidate RG flow.  The zero trace-log condition is imposed only by an exact retraction or reached asymptotically at the proposed fixed point.
+
+A staged implementation would monitor the raw trace-log residual, the overlap of successive ECS supports, the supervised loss, and the functional residual of each sampled generator.  Early in training, only the one-sided contraction safeguard may be used.  After the retained support stabilizes, $\rho_t$, $\gamma_{T,t}$, and $\kappa_t$ may be increased gradually and a small isospectral basis may be sampled.  If any diagnostic deteriorates, the method falls back to the raw optimizer proposal.  Muon and WW-PGD below are therefore partial approximations, not implementations of the complete trace-log-tracking plus validated-isospectral quotient construction.
+
+\newpage
+\subsection{Muon: a crude approximation}
+\label{sxn:muon_method}
+
+Muon is a matrix-aware optimizer for hidden-layer weights~\cite{JordanMuon2024,JordanBlog,LiuMuonScalable2025}.  It maintains a momentum-like matrix update and approximately orthogonalizes it with a short Newton--Schulz iteration before applying the learning rate; non-matrix parameters are normally handled by AdamW.  The motivation in Keller Jordan's blog is spectral: ordinary adaptive updates can drive hidden-layer matrices toward undesirable low-rank structure, so Muon replaces the anisotropic singular spectrum of the raw update by an approximately isotropic one.  This is effective empirically, but it is not derived from the RG quotient geometry and does not identify which directions are actually redundant.
+
+Let the momentum-like update have thin SVD
+\begin{equation}
+  \mathbf G_t
+  =
+  \mathbf U_t\boldsymbol\Sigma_t\mathbf V_t^{\top}.
+  \label{eq:muon_update_svd}
+\end{equation}
+The polar idealization of Muon replaces it by
+\begin{equation}
+  \Delta\W_t
+  =
+  \operatorname{Ortho}(\mathbf G_t)
+  \simeq
+  \mathbf U_t\mathbf V_t^{\top}.
+  \label{eq:muon_polar_update}
+\end{equation}
+Consequently,
+\begin{equation}
+\begin{aligned}
+  \Delta\W_t^{\top}\Delta\W_t
+  &\simeq
+  \mathbf V_t\mathbf V_t^{\top},\\
+  \operatorname{spec}_{+}
+  (\Delta\W_t^{\top}\Delta\W_t)
+  &=\{1,\ldots,1\}.
+\end{aligned}
+  \label{eq:muon_update_covariance}
+\end{equation}
+so the active update singular values share one scale and
+\begin{equation}
+  \operatorname{Tr}_{+}\log
+  (\Delta\W_t^{\top}\Delta\W_t)
+  \simeq 0.
+  \label{eq:muon_update_trace_log}
+\end{equation}
+The learning rate remains outside this normalization,
+\begin{equation}
+  \W_{t+1}=\W_t-\eta_t\Delta\W_t.
+  \label{eq:muon_layer_step}
+\end{equation}
+
+Muon therefore removes anisotropic scale and conditioning from the \emph{update}, which may suppress excessive motion along a few singular directions.  But it does not select an ECS, compute the trace-log normal $\mathbf G_T$, identify motion toward $\Fzero$, remove tangent isospectral generators, or restore the trace-log of the layer state.  It can remove some redundant motion, but it also changes physical components because it does not know the quotient decomposition.
+
+Muon should thus be interpreted as a crude operational test: broad update isotropization can change the spectral route followed during training, but it is not an implementation of the sampled isospectral quotient in Eq.~\eqref{eq:optimizer_full_projector} and does not establish exact RG projection or critical slowing down.
+
+\clearpage
+\subsection{WW-PGD: Projected Gradient Descent}
+\label{sxn:wwpgd_method}
+
+WeightWatcher-guided Projected Gradient Dynamics (WW-PGD) is the first-pass implementation designed to test the operational RG idea more directly.  It does not compute the sampled isospectral quotient of Eq.~\eqref{eq:optimizer_full_projector}, and it does not attempt to remove the complicated isospectral directions tangent to fixed trace-log level sets.  Instead, the base optimizer proposes a finite layer matrix, after which WW-PGD modifies a selected spectral window.  The method removes or restores one scalar retained-volume coordinate and simultaneously nudges the remaining shape coordinates toward the marginal $\alpha\simeq2$ rank-order form.
+
+In the branch picture, this scalar direction is the trace-log drift toward the chosen trace-log target.  One sign of that drift reduces retained correlated volume and points back toward the weak-tail or trivial branch $\Fzero$; the opposite sign can overconcentrate the retained spectrum.  WW-PGD controls this one-dimensional volume motion while leaving the harder isospectral quotient problem for future work.  It is therefore a partial test of the proposal, not a realization of the complete RG optimizer.
+
+\begin{center}
+\safeincludegraphics[width=\columnwidth]{figures/ww-pgd.png}
+\captionof{figure}{\textbf{WW-PGD as an approximate finite spectral correction.} The base optimizer proposes a candidate layer.  WW-PGD selects a window between the fitted PL start and the ECS/trace-log start, reshapes it toward an $\alpha\simeq2$ target, restores the selected trace-log before blending, and mixes the result back into the optimizer trajectory.}
+\label{fig:wwpgd_optimizer}
+\end{center}
+
+For epoch or outer step $e$, write
+\begin{equation}
+  \widehat\W_{\ell,e+1}
+  =
+  \mathcal O_{\rm base}^{(e)}(\W_{\ell,e}),
+  \qquad
+  \W_{\ell,e+1}
+  =
+  \mathcal R_{\rm WW}(\widehat\W_{\ell,e+1}).
+  \label{eq:wwpgd_outer_map}
+\end{equation}
+The SVD and spectral diagnostics of the proposed layer are then evaluated using the conventions already established earlier in the paper.  Let $m_{\rm PL}$ and $m_{\Rell}$ denote the numbers of eigenvalues retained by the fitted PL tail and by the trace-log ECS.  WW-PGD chooses the midpoint in rank space,
+\begin{equation}
+  m_{\rm WW}
+  =
+  \left\lfloor
+  \frac{m_{\rm PL}+m_{\Rell}}{2}
+  \right\rfloor,
+  \qquad
+  \Rell_{\rm WW}=\{(1),\ldots,(m_{\rm WW})\}.
+  \label{eq:wwpgd_midpoint_window}
+\end{equation}
+The correction is skipped when this window is too small or unstable.
+
+Inside $\Rell_{\rm WW}$, rank $k$ is assigned the target
+\begin{equation}
+  \mu_k=k^{-q},
+  \qquad q=1,
+  \qquad \alpha_{\rm target}=1+q^{-1}=2.
+  \label{eq:wwpgd_rank_target}
+\end{equation}
+The target $\tilde\lambda_k^{\star}=A\mu_k$ uses an amplitude that preserves the current selected trace-log,
+\begin{equation}
+  A
+  =
+  \exp\!\left[
+  \frac{
+  \sum_{i\in\Rell_{\rm WW}}\log\tilde\lambda_i
+  -
+  \sum_{k=1}^{m_{\rm WW}}\log\mu_k
+  }{m_{\rm WW}}
+  \right].
+  \label{eq:wwpgd_target_amplitude}
+\end{equation}
+Thus the target changes the rank-order shape without independently imposing a new product scale.
+
+The move is deliberately soft.  With homotopy $h_e\in[0,1]$, define
+\begin{align}
+  g_k
+  &=
+  \log\tilde\lambda_k-
+  \log\tilde\lambda_k^{\star},
+  \notag\\[-0.3em]
+  r_k
+  &=
+  \operatorname{clip}\!\left(
+  \frac{1-\eta_C h_e g_k}
+       {1+\eta_C h_e g_k},
+  r_{\min},r_{\max}
+  \right),
+  \label{eq:wwpgd_cayley_move}
+\end{align}
+with provisional values
+\begin{equation}
+  \widehat{\tilde\lambda}_k
+  =
+  \tilde\lambda_k r_k.
+  \label{eq:wwpgd_provisional_eigenvalues}
+\end{equation}
+The selected trace-log is then restored before reconstruction,
+\begin{align}
+  \tilde\lambda_k^{\rm ret}
+  &=
+  \widehat{\tilde\lambda}_k
+  \exp\!\left[
+  \frac{
+  T_{\rm WW}
+  -
+  \sum_{j=1}^{m_{\rm WW}}
+  \log\widehat{\tilde\lambda}_j
+  }{m_{\rm WW}}
+  \right],
+  \label{eq:wwpgd_trace_log_restore}\\
+  T_{\rm WW}
+  &=
+  \sum_{i\in\Rell_{\rm WW}}
+  \log\tilde\lambda_i.
+  \label{eq:wwpgd_current_trace_log}
+\end{align}
+In log-eigenvalue coordinates, Eq.~\eqref{eq:wwpgd_trace_log_restore} removes exactly one scalar component: the uniform retained log-volume direction.  The remaining $m_{\rm WW}-1$ coordinates describe spectral shape.  This is the direct connection to the redundant-direction discussion: WW-PGD controls one normal gauge coordinate but does not project the tangent isospectral orbit.
+
+The retained singular values are reconstructed through their scale-free ratios, producing $\W^{\rm shaped}$.  The final state is blended with the base proposal,
+\begin{equation}
+  \W^{+}
+  =
+  (1-\eta_B h_e)\widehat\W
+  +
+  \eta_B h_e\W^{\rm shaped}.
+  \label{eq:wwpgd_final_blend}
+\end{equation}
+The restoration in Eq.~\eqref{eq:wwpgd_trace_log_restore} is exact on the selected shaped spectrum before this final blend.  The complete WW-PGD update is intentionally approximate: after blending, the selected trace-log generally has a residual.  This is a feature of the first-pass design.  The method nudges the optimizer toward the proposed RG trajectory without forcing every intermediate checkpoint exactly onto the final trace-log slice.
+
+A useful diagnostic is the post-blend residual
+\begin{equation}
+  \varepsilon_T^{+}
+  =
+  \left|
+  \sum_{i\in\Rell_{\rm WW}}
+  \log\tilde\lambda_i(\W^{+})
+  -T_{\rm WW}
+  \right|.
+  \label{eq:wwpgd_postblend_residual}
+\end{equation}
+Together with the supervised loss, the stability of the selected window, and the movement of the PL and ECS boundaries, this residual can be used to adapt $\eta_B$, $\eta_C$, and the homotopy schedule.  If the correction damages the optimizer trajectory, it should be weakened or skipped.  Near a stable endpoint, it may be tightened.
+
+WW-PGD is therefore the first operational experiment on the proposed RG extension.  It tests whether removing one retained-volume degree of freedom and steering the remaining spectral shape toward the marginal target can improve training without imposing the full quotient geometry.  A more complete optimizer would add the local update-space quotient of Eq.~\eqref{eq:optimizer_full_projector}, including carefully selected isospectral generators, while retaining the same safeguards against trajectory distortion.

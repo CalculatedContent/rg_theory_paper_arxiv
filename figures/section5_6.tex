@@ -1,0 +1,284 @@
+\subsection{Removing Redundant RG Directions}
+\label{sxn:redundant_rg_directions}
+
+In Wilsonian renormalization-group (RG) theory, coarse graining is not meant to track every possible microscopic coordinate.  It is meant to track the quantities that remain after arbitrary choices of scale and coordinates have been removed.  Wilson and Kogut make this idea explicit in the block-spin construction; Wegner calls the corresponding directions redundant operators; and Polchinski's exact RG writes the same freedom in differential form~\cite{WilsonKogut1974,Wegner,Polchinski1984}.  We use the same principle here, but in the spectral language of this paper: the useful RG flow is the flow of the retained spectral \emph{shape}, not the flow of every entry of \(\W\).
+
+For one small optimizer displacement \(\delta\W\), there are three different kinds of motion that can occur.  First, the update can change the retained product scale relative to the global Frobenius normalization, while leaving the retained shape essentially unchanged.  This is the trace-log, or volume, redundancy.  Second, the update can rotate the retained basis without changing the retained eigenvalue multiset.  This is an isospectral coordinate redundancy.  Third, the update can genuinely reshape the retained empirical spectral density (ESD): it can move spectral mass, change the tail burden, or change the fitted power-law exponent \(\alpha\).  In the spectral quotient description, only the third motion is physical.  The first two are changes of description, not changes of retained spectral shape.
+
+This distinction is important because the trace-log condition alone does not identify the good branch.  A layer can satisfy a trace-log gauge while still sitting on a weak or trivial branch.  Conversely, a useful update can preserve the gauge but still be redundant if it only rotates the retained basis.  The goal of this subsection is therefore local and precise: for one fixed retained support \(\Rell\), remove the update components that do not change the retained ESD shape.
+
+\begin{center}
+  \safeincludegraphics[width=\columnwidth]{figures/rg_redundant_flow.png}
+  \captionof{figure}{\textbf{Redundant directions in the spectral RG flow.}  A raw optimizer update contains both quotient-space motion and redundant motion.  The local projector \(\mathbf I-\mathbf P_{\rm red}\) removes trace-log drift and selected isospectral rotations.  The remaining component is the part that changes the retained spectral shape and can be compared with the candidate correlated branch \(\Ferg\).}
+  \label{fig:redundant_rg_directions_flow}
+\end{center}
+
+We keep the branch notation from the scale-counting subsection.  The weak-tail branch \(\Fzero\) is the branch in which no extensive retained ECS survives the coarse graining.  Equivalently, for a retained set on that branch, written \(\Rell_0\),
+\begin{equation}
+  \Fzero:
+  \qquad
+  \frac{M_{\Rell_0}}{M}\longrightarrow 0,
+  \qquad
+  g_E\;\text{undefined}.
+  \label{eq:Fzero_quotient}
+\end{equation}
+The subscript in \(\Rell_0\) labels the branch.  It is not a power and it should not be read as a full ``trivial retained space.''  If one wants to gauge-fix the entire positive background support, that is a different statement and should be written with \(\Splus\):
+\begin{equation}
+\begin{aligned}
+  \Tr\log\Xtilde_{\Splus}&=0,\\
+  \mathcal V_{\Splus}
+  &:={}\operatorname{span}\{\mathbf v_i:i\in\Splus\}\\
+  &=\operatorname{range}(\X).
+\end{aligned}
+  \label{eq:Splus_background_gauge}
+\end{equation}
+This full positive support is not the same object as the retained ECS on the correlated branch.
+
+The correlated branch \(\Ferg\) is the quotient class in which a nontrivial retained ECS survives and aligns, empirically, with the fitted HTSR power-law tail:
+\begin{equation}
+  \Ferg:
+  \qquad
+  \Tr\log\Xtilde_{\Rell_\star}\simeq 0,
+  \qquad
+  \RECS^\star\simeq\TPL^\star,
+  \qquad
+  \alpha\simeq 2.
+  \label{eq:Ferg_quotient}
+\end{equation}
+This is not a theorem about all training dynamics.  It is the proposed endpoint of the spectral diagnostics: the trace-log scale is fixed, a nontrivial retained tail remains, and the retained shape is near the marginal \(\alpha\simeq2\) boundary.
+
+We now construct the local projection.  For one infinitesimal step, freeze the retained support \(\Rell\).  This means that the projector is computed at the current layer and does not include the derivative of the rule that selected \(\Rell\).  If a finite update changes the ECS boundary, the retained set must be recomputed afterward.
+
+On this fixed retained support, define the trace-log functional
+\begin{equation}
+  T_{\Rell}(\W)
+  :=
+  \Tr\log\widetilde{\boldsymbol\Lambda}_{\Rell}
+  =
+  \sum_{i\in\Rell}\log\tilde\lambda_i .
+  \label{eq:TR_local_functional}
+\end{equation}
+Here the normalized eigenvalues use the global Frobenius convention of the paper,
+\begin{equation}
+  \tilde\lambda_i
+  =
+  \frac{M}{\Tr\X}\lambda_i
+  =
+  \frac{MN}{\|\W\|_F^2}\lambda_i,
+  \qquad
+  \lambda_i\in\operatorname{spec}\!\left(N^{-1}\W^\top\W\right).
+  \label{eq:global_frobenius_normalization_local}
+\end{equation}
+This normalization is the reason the trace-log gradient below has two terms: one term differentiates the retained log-volume, and the other subtracts the response of the global Frobenius scale.
+
+Let
+\begin{equation}
+  \widehat{\boldsymbol\Lambda}_{\Rell}
+  :=
+  \diag(\lambda_i)_{i\in\Rell},
+  \qquad
+  \mathbf K_{\Rell}
+  :=
+  \V_{\Rell}\widehat{\boldsymbol\Lambda}_{\Rell}^{-1}\V_{\Rell}^{\top},
+  \label{eq:KR_definition}
+\end{equation}
+where \(\V_{\Rell}\) contains the retained right singular vectors.  Away from eigenvalue crossings, or with the retained subspace held fixed, the gradient of \(T_{\Rell}\) with respect to the full weight matrix is
+\begin{equation}
+  \mathbf G_T
+  :=
+  \nabla_{\W}T_{\Rell}(\W)
+  =
+  \frac{2}{N}\W\mathbf K_{\Rell}
+  -
+  \frac{2\Mred}{\|\W\|_F^2}\W .
+  \label{eq:GT_trace_normalized}
+\end{equation}
+The formula is just the differential identity
+\(\dd\log\det\X_{\Rell}=\Tr(\X_{\Rell}^{-1}\dd\X_{\Rell})\), together with the derivative of \(\Mred\log\|\W\|_F^2\) from the normalization in Eq.~\eqref{eq:global_frobenius_normalization_local}.  Thus, for a raw infinitesimal displacement,
+\begin{equation}
+  T_{\Rell}(\W+\delta\W)
+  =
+  T_{\Rell}(\W)
+  +
+  \langle\mathbf G_T,\delta\W\rangle_F
+  +
+  O(\|\delta\W\|_F^2).
+  \label{eq:trace_log_linearization}
+\end{equation}
+The update preserves the trace-log gauge to first order precisely when
+\begin{equation}
+  \langle\mathbf G_T,\delta\W_{\rm RG}\rangle_F=0.
+  \label{eq:trace_log_tangent_condition}
+\end{equation}
+
+When \(\|\mathbf G_T\|_F>0\), the component normal to the trace-log gauge slice is
+\begin{equation}
+  \delta\W_{\log}
+  =
+  \frac{\langle\delta\W,\mathbf G_T\rangle_F}
+       {\langle\mathbf G_T,\mathbf G_T\rangle_F}\,\mathbf G_T,
+  \qquad
+  \delta\W_{\perp}
+  =
+  \delta\W-\delta\W_{\log}.
+  \label{eq:trace_log_projection}
+\end{equation}
+The removed piece \(\delta\W_{\log}\) is the part of the proposed update that changes the retained covariance volume.  The projected piece \(\delta\W_{\perp}\) is tangent to the trace-log slice, but only to first order at fixed \(\Rell\).  A finite step can still create second-order drift, so an actual optimizer should recheck or retract the trace-log after the step.
+
+This first projection still does not remove every redundancy.  Some redundant motions already lie on the trace-log slice.  The simplest example is a rotation of the retained right coordinates.  Let
+\begin{equation}
+  \mathbf O(\epsilon)=e^{\epsilon\A}\in \mathrm{SO}(\Mred),
+  \qquad
+  \A^\top=-\A .
+  \label{eq:retained_rotation_group}
+\end{equation}
+The retained rotation can be embedded into the full input-coordinate space by
+\begin{equation}
+\begin{aligned}
+  \mathbf Q_{\Rell}(\epsilon)
+  &:=
+  \V_{\Rell}\mathbf O(\epsilon)\V_{\Rell}^{\top}
+  +
+  \big(\mathbf I-\V_{\Rell}\V_{\Rell}^{\top}\big),\\
+  \mathbf Q_{\Rell}(\epsilon)^{\top}
+  \mathbf Q_{\Rell}(\epsilon)&=\mathbf I .
+\end{aligned}
+  \label{eq:retained_rotation_embedding}
+\end{equation}
+Thus \(\W\mapsto\W\mathbf Q_{\Rell}(\epsilon)\), and inside the retained block this is just
+\begin{equation}
+  \W_{\Rell}
+  \mapsto
+  \W_{\Rell}\mathbf O(\epsilon),
+  \qquad
+  \W_{\Rell}:=\W\V_{\Rell}.
+  \label{eq:retained_weight_rotation}
+\end{equation}
+The associated infinitesimal generator in the full weight space is
+\begin{equation}
+  \mathbf Z_{\A}(\W)
+  :=
+  \left.\frac{d}{d\epsilon}\right|_{\epsilon=0}
+  \W\mathbf Q_{\Rell}(\epsilon)
+  =
+  \W\V_{\Rell}\A\V_{\Rell}^{\top},
+  \label{eq:ZA_definition}
+\end{equation}
+so that
+\begin{equation}
+  \delta\W
+  =
+  \epsilon\,\mathbf Z_{\A}(\W)+O(\epsilon^2).
+  \label{eq:deltaW_ZA}
+\end{equation}
+The retained covariance operator transforms by orthogonal conjugation,
+\begin{equation}
+  \Xtilde_{\Rell}
+  \mapsto
+  \mathbf O(\epsilon)^\top\Xtilde_{\Rell}\mathbf O(\epsilon).
+  \label{eq:X_rotation_conjugation}
+\end{equation}
+Therefore its infinitesimal change is
+\begin{equation}
+  \delta\Xtilde_{\Rell}
+  =
+  \epsilon\big(\Xtilde_{\Rell}\A-\A\Xtilde_{\Rell}\big)
+  +O(\epsilon^2).
+  \label{eq:X_commutator_rotation}
+\end{equation}
+This is a commutator, so it changes the retained basis representation but not the retained eigenvalues.  Consequently,
+\begin{equation}
+  \delta\Tr\log\Xtilde_{\Rell}=0,
+  \qquad
+  \delta\Tr\Xtilde_{\Rell}=0,
+  \qquad
+  \langle\mathbf G_T,\mathbf Z_{\A}\rangle_F=0.
+  \label{eq:rotation_invariants}
+\end{equation}
+The last equality says that these rotations are already tangent to the trace-log slice.  They cannot be removed by the normal projection in Eq.~\eqref{eq:trace_log_projection}; they must be removed by a tangential quotient projection.
+
+This statement is deliberately spectral.  A retained-coordinate rotation is redundant for the retained ESD and for any observable that depends only on that ESD.  It need not be a symmetry of the full neural-network function unless the surrounding layers compensate the rotation.  Thus the word ``physical'' in this subsection means physical in the spectral quotient model, not automatically physical in the full input--output function of the network.
+
+Other ESD-preserving directions can be included as well.  For example, output-side orthogonal rotations of \(\W\) leave \(\W^\top\W\) unchanged exactly, and hence leave the entire ESD unchanged.  The formulas below do not require the displayed \(\mathbf Z_{\A}\)'s to exhaust all possible redundancies.  They only require us to choose the redundant directions we want to remove in the local model.
+
+Collect the selected redundant directions into a finite list \(\{\mathbf Z_{\mu}\}\).  This list should include \(\mathbf G_T\) and whichever tangent isospectral generators are being removed.  Then any raw displacement is decomposed locally as
+\begin{equation}
+  \delta\W
+  =
+  \delta\W_{\rm phys}
+  +
+  \delta\W_{\rm red},
+  \qquad
+  \delta\W_{\rm RG}
+  =
+  (\mathbf I-\mathbf P_{\rm red})\delta\W .
+  \label{eq:local_RG_decomposition}
+\end{equation}
+The desired quotient-space update is orthogonal to all selected redundant directions,
+\begin{equation}
+\begin{aligned}
+  \langle\delta\W_{\rm RG},\mathbf G_T\rangle_F&=0,\\
+  \langle\delta\W_{\rm RG},\mathbf Z_{\A}\rangle_F&=0
+  \quad\text{for the selected }\A\text{'s}.
+\end{aligned}
+  \label{eq:physical_update_orthogonality}
+\end{equation}
+Let
+\begin{equation}
+  H_{\mu\nu}
+  :=
+  \langle\mathbf Z_{\mu},\mathbf Z_{\nu}\rangle_F
+  \label{eq:redundant_gram_matrix}
+\end{equation}
+be the Gram matrix of the chosen redundant directions.  The quotient projector is
+\begin{equation}
+  \mathbf P_{\rm red}\delta\W
+  =
+  \sum_{\mu,\nu}
+  \mathbf Z_{\mu}(H^{+})_{\mu\nu}
+  \langle\mathbf Z_{\nu},\delta\W\rangle_F,
+  \label{eq:quotient_projector}
+\end{equation}
+where \(H^+\) is the Moore--Penrose pseudoinverse.  If the selected directions are independent, \(H^+\) reduces to the ordinary inverse \(H^{-1}\).  The pseudoinverse is the safer notation because some candidate generators can become dependent or nearly dependent in finite precision.
+
+The projection in Eq.~\eqref{eq:quotient_projector} is local.  It removes trace-log drift and selected isospectral coordinate motion at the current layer and retained support.  It does not, by itself, prevent every long-scale flow toward \(\Fzero\).  For example, a sequence of steps can still make \(\Mred/M\) shrink toward zero, or can move the selected tail boundary so that the retained ECS disappears.  Those are global RG-flow outcomes and must be monitored by the branch observables \(\Mred/M\), \(g_E\), and the ECS--PL alignment, not by one infinitesimal projector alone.
+
+In plain terms, this subsection says the following.  First fix the retained covariance volume with the trace-log gauge.  Then remove rotations and other coordinate changes that leave the retained eigenvalues unchanged.  What remains is the part of the update that can actually change the retained spectral shape.  That is the component that should be compared with the proposed flow toward \(\Ferg\), and it is the component that a spectral-RG optimizer tries to approximate.
+
+\begin{tcolorbox}[marginalbox,title=\textbf{Redundant RG directions: local quotient rule}]
+The local RG update is not the raw optimizer step.  It is the part of the step that changes the retained ESD shape.
+
+\medskip
+\textbf{1. Fix the trace-log gauge.}
+\[
+\begin{aligned}
+  T_{\Rell}(\W)&=\Tr\log\widetilde{\boldsymbol\Lambda}_{\Rell},\\
+  \langle\mathbf G_T,\delta\W_{\rm RG}\rangle_F&=0 .
+\end{aligned}
+\]
+This removes local retained-volume drift.
+
+\textbf{2. Remove tangent isospectral motion.}
+\[
+\begin{aligned}
+  \mathbf Z_{\A}(\W)&=\W\V_{\Rell}\A\V_{\Rell}^{\top},
+  \qquad \A^\top=-\A,\\
+  \delta\operatorname{spec}(\Xtilde_{\Rell})&=0 .
+\end{aligned}
+\]
+These directions preserve the retained eigenvalues, so they are redundant for spectral observables.
+
+\textbf{3. Keep the quotient-space component.}
+\[
+\begin{aligned}
+  \delta\W_{\rm RG}
+  &=
+  (\mathbf I-\mathbf P_{\rm red})\delta\W,\\
+  \mathbf P_{\rm red}\delta\W
+  &=
+  \sum_{\mu,\nu}\mathbf Z_{\mu}(H^+)_{\mu\nu}
+  \langle\mathbf Z_{\nu},\delta\W\rangle_F .
+\end{aligned}
+\]
+\takeaway{The retained update should change spectral shape, not merely scale or coordinates.  The target branch is \(\Ferg\); the trivial branch \(\Fzero\) is diagnosed globally by loss of an extensive retained ECS.}
+\end{tcolorbox}

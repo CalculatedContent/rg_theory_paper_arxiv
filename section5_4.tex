@@ -1,0 +1,130 @@
+\subsection{Scale Invariant Flow}
+An RG flow requires a series of scale-invariant decimation maps which here are characterized by the trace-log condition on the retained ECS space
+during the training flow.
+The trace-log comes from the Jacobian of the retained coordinate map.  Figure~\ref{fig:retained_jacobian_operational_v5} isolates the retained coordinate map used in the ERG trace-log gauge step.
+
+In this subsection, $\W_{\Rell}$ denotes
+\begin{equation}
+    \W_{\Rell}:=\W\V_{\Rell},
+    \label{eq:retained_coordinate_weight_map_operational_v5}
+\end{equation}
+where $\V_{\Rell}$ contains the retained right singular vectors, and $\W_{\Rell}$ is $N\times \Mred$ (not the zero-padded).
+\begin{equation}
+    \X_{\Rell}
+    :=
+    \V_{\Rell}^{T}\X\V_{\Rell}
+    =
+    \diag(\lambda_i)_{i\in\Rell} .
+    \label{eq:retained_correlation_operator_operational_v5}
+\end{equation}
+After selecting $\Rell$, let  $a\in\mathbb R^{\Mred}$ be
+\begin{equation}
+    y(a)=\frac{1}{\sqrt N}\W_{\Rell}a .
+    \label{eq:retained_coord_map_operational_v5}
+\end{equation}
+The ordinary coordinate Jacobian is therefore
+\begin{equation}
+    \frac{\partial y}{\partial a}
+    =
+    \frac{1}{\sqrt N}\W_{\Rell} .
+    \label{eq:retained_coord_jacobian_operational_v5}
+\end{equation}
+This Jacobian is not a training-time derivative such as $d\W/dt$ or $d\X/dt$.  It is the derivative of retained output coordinates with respect to retained input coordinates.
+
+\begin{center}
+\safeincludegraphics[width=\columnwidth]{figures/section_5_3_jacobian_inset.png}
+\captionof{figure}{Retained coordinate Jacobian.  After the ECS/SVD decimation selects $\Rell$, the retained layer sends coordinates $a\in\mathbb R^{\Mred}$ to $y(a)=N^{-1/2}\W_{\Rell}a$.  The ordinary coordinate Jacobian is $\partial y/\partial a=N^{-1/2}\W_{\Rell}$.  Its raw image volume is $J_{\Rell}^{W}=\sqrt{\det\X_{\Rell}}$.}
+\label{fig:retained_jacobian_operational_v5}
+\end{center}
+
+The determinant appears because the retained map changes volume.  Since $\W_{\Rell}$ may be rectangular, we do not take an ordinary determinant of $\W_{\Rell}$.  We take the induced $\Mred$-dimensional volume factor.  The squared volume factor is the Gram determinant,
+\begin{equation}
+    \det\!\left[
+    \left(\frac{1}{\sqrt N}\W_{\Rell}\right)^T
+    \left(\frac{1}{\sqrt N}\W_{\Rell}\right)
+    \right]
+    =
+    \det\X_{\Rell} .
+    \label{eq:gram_det_operational_v5}
+\end{equation}
+Equivalently,
+\begin{equation}
+    \left(\frac{1}{\sqrt N}\W_{\Rell}\right)^T
+    \left(\frac{1}{\sqrt N}\W_{\Rell}\right)
+    =
+    \V_{\Rell}^{T}\X\V_{\Rell}
+    =
+    \X_{\Rell} .
+    \label{eq:retained_gram_operator_operational_v5}
+\end{equation}
+Therefore the raw retained volume Jacobian is
+\begin{equation}
+    J_{\Rell}^{W}
+    =
+    \sqrt{\det\X_{\Rell}}
+    =
+    \prod_{i\in\Rell}\sqrt{\lambda_i} .
+    \label{eq:retained_volume_jacobian_operational_v5}
+\end{equation}
+Taking logarithms gives
+\begin{equation}
+    \log J_{\Rell}^{W}
+    =
+    \frac12\log\det\X_{\Rell}
+    =
+    \frac12\Tr\log\X_{\Rell}
+    =
+    \frac12\sum_{i\in\Rell}\log\lambda_i .
+    \label{eq:retained_log_jacobian_operational_v5}
+\end{equation}
+Thus the trace-log is the additive log-volume of the retained coordinate map.
+
+The SETOL ERG gauge evaluates this retained volume using the normalized retained operator $\Xtilde_{\Rell}$ and retained eigenvalues $\tilde\lambda_{\Rell,i}$.  The normalized retained volume factor is
+\begin{equation}
+    \widetilde J_{\Rell}
+    :=
+    \sqrt{\det\Xtilde_{\Rell}}
+    =
+    \prod_{i\in\Rell}\sqrt{\tilde\lambda_{\Rell,i}} .
+    \label{eq:relative_jacobian_operational_v5}
+\end{equation}
+Taking logarithms gives
+\begin{equation}
+    \log\widetilde J_{\Rell}
+    =
+    \frac12\Tr\log\Xtilde_{\Rell}
+    =
+    \frac12\sum_{i\in\Rell}\log\!\left(\tilde\lambda_{\Rell,i}\right).
+    \label{eq:relative_log_jacobian_operational_v5}
+\end{equation}
+The scale-invariant ERG condition is
+\begin{equation}
+    \widetilde J_{\Rell}\simeq1
+    \qquad\Longleftrightarrow\qquad
+    \Tr\log\Xtilde_{\Rell}\simeq0 .
+    \label{eq:trace_log_condition_operational_v5}
+\end{equation}
+This is the ERG trace-log gauge-fixing constraint; after the training step $\Opt[\mathbf W_t]$, it defines the retained ECS at the next step of the RG flow.
+The optimizer flow thus both generates and implicitly tracks the RG flow.
+
+The Jacobian argument gives the same trace-log condition as SETOL.  SETOL obtains the condition from the HCIZ effective free energy, where the change from weights to correlations produces a log-determinant term.  The RG argument obtains the same condition from the retained coordinate map for any selected ECS.
+
+The fixed-point object is a normalized ESD shape, not a raw matrix.  The raw operator $\X_{\Rell}$ can change during training.  The operator $\Xtilde_{\Rell}$ places the retained spectrum on the fixed normalized scale.  A fixed point means that this retained spectral shape remains stable after further decimation and trace-log testing.  At the proposed fixed point, the SETOL/ECS window and the HTSR power-law window align,
+\begin{equation}
+    \Rell_{\rm ECS}^{\star}
+    \simeq
+    \mathcal T_{\rm PL}^{\star},
+    \qquad
+    \rho_{\rm tail}(\tilde{\lambda})\sim\tilde{\lambda}^{-2},
+    \qquad
+    \Tr\log\Xtilde_{\Rell}\simeq0 .
+    \label{eq:alignment_claim_operational_v5}
+\end{equation}
+This alignment is not a definition.  It is the measurable agreement between the trace-log effective space and the independently fitted HTSR tail.
+
+The truncated-SVD claim is the operational test of the fixed point.  SETOL predicts that, at the proposed RG fixed point,
+one can replace $\W$ with the lower-rank (zero-padded) $\W_{\Rell}$ without degrading the layer's generalization contribution.
+This is why the RG step can be described as a truncated-SVD decimation.
+
+The next question is then to understand how $\alpha=2$ emerges as the boundary between
+optimal learning and overfitting and is analogous to a critical universal exponent.
