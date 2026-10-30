@@ -168,7 +168,7 @@
 
 \emph{Why does Deep Learning Work?} Artificial neural networks now power large language models,
 AlphaGo and AlphaFold-class systems~\cite{SilverAlphaGo2016,JumperAlphaFold2021},
-and other foundation models~\cite{BommasaniFoundationModels2021,Qwen25TechnicalReport2025,OpenAIGPTOSS2025,OpenAIGPT4TechnicalReport2023},
+and other foundation models~\cite{BommasaniFoundationModels2021,Qwen25TechnicalReport2025,OpenAIGPTOSS2025},
 yet we still lack a generally accepted theory that both explains their convergence and tells practitioners how to improve training. Modern networks optimize enormous nonconvex objectives. They memorize parts of their data. They generalize in ways that remain surprising. A theory of learning should explain this coexistence, not merely describe the loss curve.
 
 We don't have a theory of learning; we simply train until the loss stops.
@@ -487,8 +487,8 @@ finite-variance matrix, this ESD approaches the deterministic
 Marchenko--Pastur (MP) law~\cite{MarchenkoPastur1967}; MP is the
 self-averaging baseline.  It is the large-$N$ limit ($Q=\tfrac{N}{M}$ fixed)
 of the mean distribution $\rho^{\pi}(\lambda)$ for the ESD of $\mathbf W^{\pi}$.
-For a typical i.i.d. rectangular matrix, we expect all the eigenvalues
-to lie within the MP bulk, to within finite-size Tracy--Widom (TW)
+For a typical (i.e. light-tailed) i.i.d. rectangular matrix, all the eigenvalues will
+lie within the MP bulk, to within finite-size Tracy--Widom (TW)
 fluctuations~\cite{TracyWidom1996,BaikBenArousPeche2005}.
 
 If an eigenvalue $\lambda_{\rm trap}$ appears beyond
@@ -720,7 +720,7 @@ and we study the flow of the retained spectral energy $\Ered$.
 Figure~\ref{fig:rg_flow_energy} shows RG decimation, rescaling, and the resulting energy flow.
 The  scale is set by normalizing by the First-moment.
 The ERG trace-log informs the decimation step.
-We then study the how the retained spectral energy $\Ered$ flows
+We then study how the retained spectral energy $\Ered$ flows
 Eq.~\eqref{eq:trace_law_energy} defined this energy as the first moment of the retained ECS.
 The RG question is therefore concrete: after normalizing $\X$ and selecting the ECS,
 how does $\Ered$ flow across spectral scales?
@@ -879,7 +879,7 @@ of a continuous RG flow along the log-bands.
 Regime & spectral energy per scale & Scale-flow meaning & Statistical meaning & Learning meaning \\
 \midrule
 $\alpha>2$ & $\tilde{\lambda}^2\rho({\lambda})\sim\tilde{\lambda}^{2-\alpha}\to0$ & Spectral band gain decays; weak-tail sector or approach toward the trivial fixed point $\Fzero$. & First moment self-averages; dominant tail components stay controlled. & Stable but potentially weakly correlated or undertrained tail. \\
-$\alpha=2$ & $\tilde{\lambda}^2\rho({\lambda})\sim\tilde{\lambda}^0$ & Scale-balanced logarithmic-band state; candidate $\Ferg$ when ECS aligns with the fitted tail. & Marginal self-averaging boundary. Universal critical exponent. & Maximal stable structured-variation capture before tail-component domination. \\
+$\alpha=2$ & $\tilde{\lambda}^2\rho({\lambda})\sim\tilde{\lambda}^0$ & Scale-balanced logarithmic-band state; candidate $\Ferg$ when ECS aligns with the fitted tail. & Marginal self-averaging boundary. Proposed universal critical exponent. & Maximal stable structured-variation capture before tail-component domination. \\
 $\alpha<2$ & $\tilde{\lambda}^2\rho({\lambda})\sim\tilde{\lambda}^{2-\alpha}\to\infty$ & Spectral band gain grows
 toward the dominant tail components. & Tail components and fluctuations
 can dominate the first moment. & Overfit risk; correlation traps; held-out degradation. \\
@@ -1162,7 +1162,7 @@ Eventually, however, all layer values satisfy $\alpha_\ell(t)\rightarrow 2$, aga
 
 This comparison is intentionally untuned. We made no attempt to optimize learning rates or make Muon win the MNIST benchmark.
 
-In summary, AdamW seems to overfit quickly, while Muon approaches the proposed RG fixed  point
+AdamW immediately drives the FC1 $\alpha<2$, while Muon approaches the proposed RG fixed  point
 asymptotically slowly.  This is consistent with Muon removing the
  RG redundant scale directions, and could be associated with RG \emph{critical slowing down}.
 \clearpage
@@ -1289,7 +1289,10 @@ Moreover, if learned correlation spectra have candidate universal fixed-point st
 This paper proposes an RG theory of NN layer convergence, integrating the older phenomenological HTSR approach and the more recently developed
 SETOL theory. HTSR supplies the empirical fact: strong layers often develop heavy-tailed spectra near $\alpha\simeq2$. SETOL supplies the trace-log condition: remove arbitrary layer scale and study the retained effective correlation space. The main claim is that these two pictures meet at the same spectral endpoint.
 
-The value $\alpha=2$ has two meanings. Statistically, it marks the boundary between stable bulk-supported learning and domination by a few extreme eigencomponents. RG scale counting gives the same boundary. At $\alpha=2$, each logarithmic spectral shell contributes comparable spectral energy gain.
+The value $\alpha=2$ has two meanings.
+%Statistically, it marks the boundary between stable bulk-supported learning and domination by a few extreme eigencomponents. RG scale counting gives the same boundary.
+We propose it as the boundary between stable bulk-supported learning and domination by a few extreme eigencomponents.
+At $\alpha=2$, each logarithmic spectral shell contributes comparable spectral energy gain.
 This agreement makes $\alpha\simeq2$ a critical boundary, not just a fitted number.
 
 The fixed point is layerwise. Each dense layer has its own retained spectrum, trace-log scale, and dominant-tail burden. A trained network is therefore not one monolithic fixed point. It is a coordinated state in which many layers approach compatible spectral endpoints.

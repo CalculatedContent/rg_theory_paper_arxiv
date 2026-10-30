@@ -2,7 +2,7 @@
 \label{sxn:better_optimizers}
 
 
-The base optimizer supplies the supervised training trajectory. The RG construction does not replace that dynamics; it acts on the completed optimizer step and nudges only the retained spectral coordinates associated with redundant RG motion. Any correction should therefore remain local, damped, and subordinate to the loss-driven update.
+The base optimizer supplies the supervised training trajectory. The RG construction does not replace that dynamics; it acts on the completed optimizer step and nudges selected retained spectral coordinates associated with redundant RG motion. Any correction should therefore remain local, damped, and subordinate to the loss-driven update.
 
 \begin{tcolorbox}[
   marginalbox,

@@ -107,7 +107,10 @@ The scale-invariant ERG condition is
 This is the ERG trace-log gauge-fixing constraint; after the training step $\Opt[\mathbf W_t]$, it defines the retained ECS at the next step of the RG flow.
 The optimizer flow thus both generates and implicitly tracks the RG flow.
 
-The Jacobian argument gives the same trace-log condition as SETOL.  SETOL obtains the condition from the HCIZ effective free energy, where the change from weights to correlations produces a log-determinant term.  The RG argument obtains the same condition from the retained coordinate map for any selected ECS.
+We have now obtained the ECS trace-log condition in two ways.
+SETOL obtains it from the HCIZ effective free energy, where the change from weights to correlations produces a log-determinant term.
+The Jacobian construction  here obtains the same condition from the retained coordinate map for any selected ECS.
+
 
 The fixed-point object is a normalized ESD shape, not a raw matrix.  The raw operator $\X_{\Rell}$ can change during training.  The operator $\Xtilde_{\Rell}$ places the retained spectrum on the fixed normalized scale.  A fixed point means that this retained spectral shape remains stable after further decimation and trace-log testing.  At the proposed fixed point, the SETOL/ECS window and the HTSR power-law window align,
 \begin{equation}
