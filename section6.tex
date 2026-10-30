@@ -403,14 +403,16 @@ For epoch or outer step $e$, write
 \end{equation}
 The SVD and spectral diagnostics of the proposed layer are then evaluated using the conventions already established earlier in the paper.  Let $m_{\rm PL}$ and $m_{\Rell}$ denote the numbers of eigenvalues retained by the fitted PL tail and by the trace-log ECS.  WW-PGD chooses the midpoint in rank space,
 \begin{equation}
-  m_{\rm WW}
-  =
-  \left\lfloor
-  \frac{m_{\rm PL}+m_{\Rell}}{2}
-  \right\rfloor,
-  \qquad
-  \Rell_{\rm WW}=\{(1),\ldots,(m_{\rm WW})\}.
-  \label{eq:wwpgd_midpoint_window}
+\begin{aligned}
+m_{\mathrm{WW}}
+&= \min\!\left\{
+m_{\mathrm{PL}},
+\left\lfloor \frac{m_{\mathrm{PL}}+m_R}{2} \right\rfloor
+\right\}, \\
+\Rell_{\rm WW}
+&= \{(1),\ldots,(m_{\rm WW})\}.
+\end{aligned}
+\label{eq:wwpgd_midpoint_window}
 \end{equation}
 The correction is skipped when this window is too small or unstable.
 

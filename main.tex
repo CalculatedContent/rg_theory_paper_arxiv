@@ -261,7 +261,9 @@ Figure~\ref{fig:spectral} shows a representative fitted spectrum.
 \end{figure}
 
 The diagnostic is practical. The open-source \WW{} tool estimates the layerwise HTSR PL exponents $\alpha$ from trained weights alone. One can obtain PL fits for both linear and convolutional layers (see \cite{MartinMahoney2020SDM}).
-Prior work showed that these data-free spectral metrics can predict model-quality trends without access to training or testing data \cite{MartinPengMahoney2021}. Figure~\ref{fig:alpha_histograms} shows recent example scans for the OpenAI GPT-OSS 20B and 120B models~\cite{OpenAIGPT4TechnicalReport2023}, and the instruct component $(\W:=\W_{\rm instruct}-\W{\rm base})$~of the Qwen2.5 instruct models.
+Prior work showed that these data-free spectral metrics can predict model-quality trends without access to training or testing data \cite{MartinPengMahoney2021}. Figure~\ref{fig:alpha_histograms} shows recent example scans for the
+OpenAI GPT-OSS 20B and 120B models~\cite{OpenAIGPTOSS2025},
+and the instruct component $(\W:=\W_{\rm instruct}-\W{\rm base})$~of the Qwen2.5 instruct models.
 Each histogram summarizes fitted layerwise $\alpha$ values across all layer weight matrices.
 
 
@@ -565,7 +567,7 @@ distinct mechanisms of non-self-averaging.
 \begin{strip}\vspace{-0.55em}
 \centering
 \safeincludegraphics[width=0.95\textwidth]{figures/rg_flow_fxd.png}
-\captionof{figure}{Operational RG flow for one dense layer. The step first decimates tiny-eigenvalue noise and retains an ECS tail $\Rell$. The SETOL-normalized retained eigenvalues are $\tilde{\lambda}_{\Rell,i}$, and the retained dimension is $M_{\Rell}=|\Rell|$.
+\captionof{figure}{Operational RG flow for one dense layer.  The step first decimates tiny-eigenvalue noise and retains an ECS tail $\Rell$. The SETOL-normalized retained eigenvalues are $\tilde{\lambda}_{\Rell,i}$, and the retained dimension is $M_{\Rell}=|\Rell|$.
 After first-moment normalization of $\X$, each retained ECS is selected ERG trace-log condition.
   }
 \label{fig:rg_flow_energy}
