@@ -149,7 +149,7 @@
   and the strongest checkpoints often appear near the PL exponent $\alpha\approx 2$.
   This pattern raises a simple question: why should this value mark a good trained layer?
   The answer is both statistical and physical.
-  The statistical answer is that $\alpha=2$ marks the boundary between stable if not optimal learning
+  Our statistical hypothesis is that $\alpha=2$ marks the boundary between stable if not optimal learning
   and overfitting via non-self-averaging.
   The physical answer is that the same value  makes the spectral energy gain scale evenly across
   logarithmic spectral scales, which is the proposed Wilsonian marginal condition.
@@ -159,8 +159,7 @@
    The resulting spectral RG flow connects the HTSR and SETOL theories to optimizers
    such as Muon, and motivates a new optimizer extension, WW-PGD.
    Together, these results point toward a spectral Renormalization-Group view of learning,
-   in which related algorithms, in NNs and even traditional machine learning (ML) algorithms,
-   may approach shared spectral structure in the settings studied here.
+   in which NNs may approach shared spectral structure in the settings studied here.
 \end{abstract}
 
 \section{Introduction}
@@ -410,21 +409,20 @@ Here, the optimal ECS flow should approach a stable scale-balanced state near $\
 %For this work, which considers the learning dynamics under a more complete RG lens,
 %the ERG trace-log condition removes volume drift while retaining scale.
 
-We first normalize or recale$\X$ as
+At each checkpoint, we first normalize the full spectrum to unit mean,
 \begin{equation}
 \Tr{\X}=M
 \end{equation}.
 We call this \emph{First-Moment Rescaling}.
 
-After rescaling, SETOL then defines a volume-preserving, scale-invariant transformation 
+Then,  SETOL defines a volume-preserving, scale-invariant transformation 
 on the student $\A_{\Rell}$ and teacher $\X_{\Rell}$ correlation matrices
 \begin{equation}
 \Tr\log\widetilde{\mathbf A}_{\Rell}=0 \leftrightarrow \Tr\log\Xtilde_{\Rell}\simeq0 .
 \label{eq:setol_trlog_AX}
 \end{equation}.
-where the tilde denotes that this trace-log condutions holds.
-(i.e. $\Xtilde_{\Rell},\ECSstart, \tilde{\lambda}$),
-This is also called \emph{gauge Fixing}, and we may say we are now on the \emph{Gauge Slice}.
+where  $\Xtilde_{\Rell}$ denotes the restriction of the normalized operator to the selected ECS.
+This is also called \emph{Gauge Fixing}, and we may say we are now on the \emph{Gauge Slice}.
 %We may drop $\Rell$ on $\Xtilde$ or $\tilde{\lambda}$ if the retained ECS is clear.
 
 The layer quality (squared) is now expressed
@@ -567,9 +565,8 @@ distinct mechanisms of non-self-averaging.
 \begin{strip}\vspace{-0.55em}
 \centering
 \safeincludegraphics[width=0.95\textwidth]{figures/rg_flow_fxd.png}
-\captionof{figure}{Operational RG flow for one dense layer. The step first decimates tiny-eigenvalue noise and retains an ECS tail $\Rell$. The SETOL-normalized retained eigenvalues are $\tilde{\lambda}_{\Rell,i}$, and the retained dimension is $M_{\Rell}=|\Rell|$. The ERG trace-log condition
-  fixes the product scale, $\sum_{i\in\Rell}\log(\tilde{\lambda}_{\Rell,i})=0$, where the marginality of $\alpha=2$ sets the normalization on $\tilde{\lambda}$.
-  %The remaining   spectral energy gain is then tested for stability.
+\captionof{figure}{Operational RG flow for one dense layer. The step first decimates tiny-eigenvalue noise and retains an ECS tail $\Rell$. The SETOL-normalized retained eigenvalues are $\tilde{\lambda}_{\Rell,i}$, and the retained dimension is $M_{\Rell}=|\Rell|$.
+After first-moment normalization of $\X$, each retained ECS is selected ERG trace-log condition.
   }
 \label{fig:rg_flow_energy}
 \vspace{-0.75em}\end{strip}
@@ -597,11 +594,11 @@ Wilsonian RG describes the flow of the layer ESD(s) induced by the optimizer ste
 
 This section describes a Wilsonian RG construction for the
 spectral density $\rho({\lambda})$ as the heavy-tailed power-law density forms
-and approaches the HTSR $\alpha=2$ candidate optimal state under the SETOL ERG trace-log rescaling.
+and approaches the HTSR $\alpha=2$ candidate optimal state under the SETOL ERG trace-log condition.
 It is the shape, not the scale, that regulates the final layer quality and therefore the final model generalization accuracy.
 The retained layer should help accuracy improve, or equivalently help error decrease,
 without making the layer contribution explode or collapse. 
-ERG trace-log normalization removes arbitrary scale.
+First-moment normalization removes arbitrary scale.
 The RG construction shows when the spectral shape collapses, diverges, or converges.
 
 The goal here  is to identify an effective description of a trained
@@ -621,7 +618,7 @@ $\mathbf{W}_{t+1}=\Opt[\mathbf{W}_t]$.
 In practice, the RG flow can be seen as a series of truncated-SVD steps, called decimations.
 Each step keeps the dominant spectral directions that contribute to the generalization accuracy,
 while dropping directions that do not matter at the current scale.
-Each retained layer is rescaled according to the trace-log law.
+Each retained layer is selected according to the trace-log law.
 The best performing models have layers that approach the SETOL ERG fixed point $\Ferg$,
 converging to an ESD with HTSR PL exponent $\alpha\simeq 2$, neither overfitting $(\alpha<2)$
 nor underfitting $(\alpha>2)$ their training data.
@@ -630,10 +627,10 @@ nor underfitting $(\alpha>2)$ their training data.
 \label{sxn:htsr_rg}
 
 HTSR provides the empirical starting point for the RG analysis.
-Section~\ref{sxn:htsr} described trained layer spectra using HTSR heavy-tailed universality classes.
+Section~\ref{sxn:htsr} described trained layer spectra using HTSR heavy-tailed (HT)  universality classes.
 Here we use those classes as a coarse description of training flow.
 We do not start with a microscopic model of the data, the optimizer, or the architecture.
-We start with the observed fact that trained layer ESDs often develop heavy-tailed power-law spectra.
+We start with the observation that trained layer ESDs often develop HT power-law spectra.
 
 \begin{center}
 \small
@@ -697,8 +694,8 @@ SETOL contributes the scale convention for the RG analysis.
 Section~\ref{sxn:setol} introduced the layer quality generating function, an effective free energy  $\IZQ$
 and showed that the Wilsonian ERG construction leads to the ERG trace-log condition.
 The present paper does not need to evaluate the full SETOL quality $\overline{Q}$.
-Instead, we use the ERG trace-log condition to define the scale,
-and we study the flow of the retained spectral energy $\Ered$ on that scale.
+Instead, we use the ERG trace-log condition to define the ECS,
+and we study the flow of the retained spectral energy $\Ered$.
 
 \begin{tcolorbox}[marginalbox,title=\textbf{SETOL $\rightarrow$ RG energy flow}]
 \small
@@ -721,11 +718,11 @@ and we study the flow of the retained spectral energy $\Ered$ on that scale.
 \end{tcolorbox}
 
 Figure~\ref{fig:rg_flow_energy} shows RG decimation, rescaling, and the resulting energy flow.
-The ERG trace-log is the scale-fixing operation;
-it is not itself the flowing energy. The quantity whose flow we study is the retained spectral energy $\Ered$,
-rescaled as needed.
+The  scale is set by normalizing by the First-moment.
+The ERG trace-log informs the decimation step.
+We then study the how the retained spectral energy $\Ered$ flows
 Eq.~\eqref{eq:trace_law_energy} defined this energy as the first moment of the retained ECS.
-The RG question is therefore concrete: after the trace-log removes arbitrary product scale,
+The RG question is therefore concrete: after normalizing $\X$ and selecting the ECS,
 how does $\Ered$ flow across spectral scales?
 
 We answer this question by using the trace-log to measure covariance volume. On the retained positive spectrum,
@@ -746,8 +743,8 @@ At the proposed Wilsonian ERG fixed point, the layer weight matrix $\W$ can be r
 by its Truncated SVD form, $\W_{\Rell}=\W_{\Rell}=\U\mathbf{\Sigma}_{\Rell}\Vt$, where
 $\mathbf{\Sigma}_{\Rell}$ is the diagonal operator of $M_{\Rell}$ singular values $(\sigma_{i})$
 (properly normalized) defined on the retained ECS, and zero for the other  $M-M_{\Rell}$ ones.
-Doing this, SETOL predicts the model can faithfully reproduce the test/generalization accuracy.
-That is, the layer generalizing components fully concentrate into the ECS.
+Doing this, SETOL shows the reduced model faithfully reproduces the test accuracy;
+the layer generalizing components fully concentrate into the ECS.
 
 %We therefore study how much retained layer energy lies in each spectral band. Define the band energy gain
 %\begin{equation}
@@ -791,7 +788,7 @@ the ECS is selected by imposing the trace-log gauge condition on the (normalized
 
 
 SETOL then selects the $\ECSstart$, the start of the ECS, based
-on the trace-log condition
+on the trace-log condition 
 \begin{equation}
   \sum_{\tilde{\lambda}_{\Rell}} \log \tilde{\lambda}_{\Rell} = 0,\quad\tilde{\lambda}_{\Rell}\ge\ECSstart
 \end{equation}
@@ -1297,7 +1294,7 @@ This agreement makes $\alpha\simeq2$ a critical boundary, not just a fitted numb
 
 The fixed point is layerwise. Each dense layer has its own retained spectrum, trace-log scale, and dominant-tail burden. A trained network is therefore not one monolithic fixed point. It is a coordinated state in which many layers approach compatible spectral endpoints.
 
-The practical diagnostic is spectral. A good layer should keep useful correlation gain spread across many retained eigencomponents. A bad layer can concentrate too much gain in a few dominant tail modes. The trace-log condition removes scale. The power-law tail measures shape.
+The practical diagnostic is spectral. A good layer should keep useful correlation gain spread across many retained eigencomponents. A bad layer can concentrate too much gain in a few dominant tail modes. The trace-log condition selects the ECS. The power-law tail measures shape.
 The dominant-tail eigencomponents test whether the layer remains self-averaging.
 
 The optimizer message is nuanced.
@@ -1343,7 +1340,7 @@ Dense layers learn by moving their spectra.
 \item The theory may be extensible to XGBoost and related algorithms:
   $\alpha=2$  and $\Tr{\log\tilde{\mathbf{X}}}=0$.
 \end{itemize}
-\takeaway{Keep the learned tail, remove its scale, and test whether the retained layer stays balanced.}
+\takeaway{Normalize $\X$, Keep the learned tail and test whether the retained layer stays balanced.}
 \end{tcolorbox}
 
 Table~\ref{tab:notation-conventions} summarizes the notation and conventions used throughout.
@@ -1376,7 +1373,7 @@ PL tail & $\TPL$, $\TPL^\star$ & CSN-selected PL window. \\
 ECS & $\Rell\subseteq\Splus$, $\Mred=|\Rell|$ & Retained ECS and size. \\
 ECS & $\RECS^\star$ & Stabilized SETOL ECS. \\
 Alignment & $\RECS^\star\simeq\TPL^\star$ & SETOL--HTSR window match. \\
-Trace-log & $\XR=\U_{\Rell}^T\X\U_{\Rell}$ & ECS-restricted operator. \\
+Trace-log & $\XR=\V_{\Rell}^T\X\V_{\Rell}$ & ECS-restricted operator. \\
 Trace-log & $\Tr\log\Xtilde_{\Rell}=\sum_{i\in\Rell}\log\tilde{\lambda}_{\Rell,i}=0$ & Scale-invariant condition. \\
 Energy & $E_+=M^{-1}\Tr\Xtilde$ & Retained spectral energy   \\
 Energy & $\Ered=\Mred^{-1}\sum_{i\in\Rell}\tilde{\lambda}_{\Rell,i}=\int\tilde{\lambda}_{\Rell}\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})d\tilde{\lambda}_{\Rell}$ & Retained spectral energy. \\
@@ -1392,7 +1389,7 @@ Branch & $\Fzero$, $\Ferg$ & RG spectral fixed points or branches. \\
 Branch & $\Fzero:g_E\ \text{undefined}$ & Trivial/random-like branch. \\
 Branch & $\Ferg:0<g_E^\star<\infty,\ \alpha\simeq2,\ \RECS^\star\simeq\TPL^\star$ & Empirical SETOL ERG fixed point or branch. \\
 Quality & $\overline Q_{\rm NN}$, $\overline Q_\ell$ & Model and layer quality. \\
-Optimizer & $A_{\Rell}=\U_{\Rell}\XR^{-1}\U_{\Rell}^T$, $G_T=\nabla_W T_{\Rell}$ & Trace-log gradient objects. \\
+Optimizer & $A_{\Rell}=\V_{\Rell}\XR^{-1}\V_{\Rell}^T$, $G_T=\nabla_W T_{\Rell}$ & Trace-log gradient objects. \\
 Optimizer & $\Delta\W_\perp$ & Trace-log projected update. \\
 WW-PGD & $\Tell$, $m=|\Tell|$ & Selected tail and size. \\
 WW-PGD & $\tilde{\lambda}_k^\star=A k^{-q}$, $q=1$ & Rank-order tail target. \\
