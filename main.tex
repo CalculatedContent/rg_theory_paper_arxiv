@@ -767,10 +767,13 @@ That is, we illustrate that $\alpha$ is analogous to an RG universal critical ex
 
 Figure~\ref{fig:rg_flow_energy} depicts the spectral RG flow for one layer.  The flow turns the ideas from Sections~\ref{sxn:htsr_rg} and~\ref{sxn:setol_rg} into a repeatable operation: decimate tiny-eigenvalue noise, retain an ECS tail, impose the SETOL ERG trace-log gauge, and compare the remaining spectral shape.  Section~\ref{sxn:htsr_rg} supplies the HTSR input: the retained ESD should approach a power-law tail, with the strongest checkpoints often near $\alpha\simeq 2$.  Section~\ref{sxn:setol_rg} supplies the SETOL input: generalization accuracy is controlled by the layer ESD through the ECS and the trace-log condition.  Section~\ref{sxn:selfavg} supplies the risk test: on the SETOL-normalized retained ECS, the retained spectral energy should self-average instead of concentrating in a few dominant tail modes.  This subsection makes that control flow operational.
 
-Figure~\ref{fig:rg_flow_energy} separates the RG step into four actions.  First, the step removes tiny-eigenvalue noise that does not contribute to the retained correlation structure.  Second, it keeps the ECS tail and represents the layer by the truncated matrix $\W_{\Rell}$.  Third, it evaluates the retained operator on the first-moment recaling for the whole ESD, and selects the ECS using $\Tr{\log \Xtilde_{\Rell}}=0$.
-When this trace-log condition is exact, the ECS is exact.
-Fourth, it tests the remaining spectral energy. The point is not to reproduce SGD or any microscopic optimizer.
-The point is to take an RG view of the training flow and  describe the learning process as a coarse-graining induced by the  optimizer trajectories
+%Figure~\ref{fig:rg_flow_energy} separates the RG step into four actions.  First, the step removes tiny-eigenvalue noise that does not contribute to the retained correlation structure.  Second, it keeps the ECS tail and represents the layer by the truncated matrix $\W_{\Rell}$.  Third, it evaluates the retained operator on the first-moment recaling for the whole ESD, and selects the ECS using $\Tr{\log \Xtilde_{\Rell}}=0$.
+%When this trace-log condition is exact, the ECS is exact.
+%Fourth, it tests the remaining spectral energy.
+
+Figure~\ref{fig} illustrates spectral decimation and the evolution of retained spectral energy during training. At each checkpoint, we first normalize the full ESD by its first moment, then select the ECS using $\Tr{\log \Xtilde_{\Rell}}=0$ on that fixed scale. This selection removes the tiny-eigenvalue noise shown in the figure and defines the truncated matrix $\W_{\Rell}$; when the trace-log condition holds exactly, the selected ECS is exact. We then evaluate the retained spectral energy and track its evolution during training. In this proposed RG view, optimization supplies the flow and effective rescaling, while the diagnostic selects the ECS without further rescaling.
+%The point is not to reproduce SGD or any microscopic optimizer.
+This RG view of the training flow  describes the learning process as a coarse-graining induced by the  optimizer trajectories
 by considering the linearized spectral view at each layer.
 
 The three regimes in Figure~\ref{fig:rg_flow_energy} give the operational meaning of underfit, balanced, and overfit.  In the orange regime, $\alpha>2$ and the tail is steep.  The retained layer may self-average, but the spectral energy can be too weak to carry enough learned correlation.  In the green regime, $\alpha\simeq2$ and the retained spectral energy stays balanced across logarithmic spectral scales.  This is the stable layer-quality regime.  In the red regime, $\alpha<2$ or correlation traps appear.  The spectral energy diverges in the RG flow, the layer quality can become strongly non-self-averaging, and
@@ -1136,7 +1139,11 @@ Short-horizon panel compares early epochs; long-horizon panel tracks the Muon $\
 %\end{tcolorbox}
 
 The Muon test asks whether update geometry changes the spectral route.  The controlled model is a three-layer MNIST MLP, described
-in the Appendix~\ref{app:optimizer_experiments}.  The comparison holds the data, model, and diagnostics fixed.  Only the matrix-valued update rule changes: AdamW~\cite{LoshchilovHutter2019} is compared to Muon.  At checkpoints, \WW{} fits the HTSR exponent of each fully connected layer
+in the Appendix~\ref{app:optimizer_experiments}.
+%The comparison holds the data, model, and diagnostics fixed.
+%Only the matrix-valued update rule changes: AdamW~\cite{LoshchilovHutter2019} is compared to Muon.  At checkpoints, \WW{} fits the HTSR exponent of each fully connected layer
+The comparison uses the same data and model for AdamW~\cite{LoshchilovHutter2019} and Muon.
+For FC1, the reported exponents use the standard ~\WW fit for AdamW and \texttt{clip\_xmax} for Muon.
 \begin{equation}
         \alpha_\ell(t),
         \qquad
@@ -1343,7 +1350,7 @@ Dense layers learn by moving their spectra.
 \item Optimizers should reduce scale-only motion and move toward the ERG fixed point.
 \item The WW-PGD optimizer extension can repair overfit models.
 \item The theory may be extensible to XGBoost and related algorithms:
-  $\alpha=2$  and $\Tr{\log\tilde{\mathbf{X}}}=0$.
+  $\alpha=2$ and $\Tr{\log\Xtilde_{\Rell}}=0$.
 \end{itemize}
 \takeaway{Normalize $\X$, Keep the learned tail and test whether the retained layer stays balanced.}
 \end{tcolorbox}
@@ -1409,7 +1416,10 @@ WW-PGD & $\eta_B,\eta_C,h_e$ & Blend, Cayley, homotopy factors. \\
 \label{app:optimizer_experiments}
 \small
 
-This appendix records the optimizer protocols. Both tests use MNIST and the same three-layer MLP, $784\rightarrow512\rightarrow512\rightarrow10$, with ReLU nonlinearities. The linear layers are logged as FC1--FC3. MNIST inputs use mean $0.1307$ and standard deviation $0.3081$. At checkpoints, \WW{} records the fitted HTSR exponent $\alpha$ and the tail diagnostics for each fully connected layer.
+This appendix records the optimizer protocols.
+%Both tests use MNIST and the same three-layer MLP, $784\rightarrow512\rightarrow512\rightarrow10$, with ReLU nonlinearities. The linear layers are logged as FC1--FC3. MNIST inputs use mean $0.1307$ and standard deviation $0.3081$.
+Both tests use MNIST and three-layer MLPs, with the configurations specified in the accompanying notebooks.
+At checkpoints, \WW{} records the fitted HTSR exponent $\alpha$ and the tail diagnostics for each fully connected layer.
 
 \paragraph{Reproduction notebooks.}
 The Muon panel uses the public notebooks \href{https://github.com/CalculatedContent/WeightWatcher-Examples/blob/main/AdamWvsMuon.ipynb}{AdamWvsMuon.ipynb}, \href{https://github.com/CalculatedContent/WeightWatcher-Examples/blob/main/MLP3-MNIST-AdamW.ipynb}{MLP3-MNIST-AdamW.ipynb}, and \href{https://github.com/CalculatedContent/WeightWatcher-Examples/blob/main/MLP3-MNIST-Muon.ipynb}{MLP3-MNIST-Muon.ipynb}. The WW-PGD wrapper is reproduced from \href{https://github.com/CalculatedContent/WW_PGD/blob/main/WW_PGD_QuickStart.ipynb}{WW\_PGD\_QuickStart.ipynb}. The plotted curves use the settings below.
