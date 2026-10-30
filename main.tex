@@ -567,9 +567,8 @@ distinct mechanisms of non-self-averaging.
 \begin{strip}\vspace{-0.55em}
 \centering
 \safeincludegraphics[width=0.95\textwidth]{figures/rg_flow_fxd.png}
-\captionof{figure}{Operational RG flow for one dense layer.  The step first decimates tiny-eigenvalue noise and retains an ECS tail $\Rell$. The SETOL-normalized retained eigenvalues are $\tilde{\lambda}_{\Rell,i}$, and the retained dimension is $M_{\Rell}=|\Rell|$.
-After first-moment normalization of $\X$, each retained ECS is selected ERG trace-log condition.
-  }
+%\captionof{figure}{Operational RG flow for one dense layer.   decimates tiny-eigenvalue noise and retains an ECS tail $\Rell$. The retained eigenvalues are $\tilde{\lambda}_{\Rell,i}$, and the retained dimension is $M_{\Rell}=|\Rell|$. Each retained ECS is selected ERG trace-log condition.}
+  \captionof{figure}{Operational RG flow for one dense layer. After first-moment normalization of $\X$, the ERG trace-log condition selects the ECS tail $\Rell$ without further rescaling. The retained eigenvalues are $\tilde{\lambda}_{\Rell,i}$, and the retained dimension is $M_{\Rell}=|\Rell|$.}
 \label{fig:rg_flow_energy}
 \vspace{-0.75em}\end{strip}
 
@@ -1387,7 +1386,7 @@ ECS & $\RECS^\star$ & Stabilized SETOL ECS. \\
 Alignment & $\RECS^\star\simeq\TPL^\star$ & SETOL--HTSR window match. \\
 Trace-log & $\XR=\V_{\Rell}^T\X\V_{\Rell}$ & ECS-restricted operator. \\
 Trace-log & $\Tr\log\Xtilde_{\Rell}=\sum_{i\in\Rell}\log\tilde{\lambda}_{\Rell,i}=0$ & Scale-invariant condition. \\
-Energy & $E_+=M^{-1}\Tr\Xtilde$ & Retained spectral energy   \\
+%Energy & $E_+=M^{-1}\Tr\Xtilde$ & Retained spectral energy   \\
 Energy & $\Ered=\Mred^{-1}\sum_{i\in\Rell}\tilde{\lambda}_{\Rell,i}=\int\tilde{\lambda}_{\Rell}\rhohat_{\Rell}(\tilde{\lambda}_{\Rell})d\tilde{\lambda}_{\Rell}$ & Retained spectral energy. \\
 Tail & $\phi_k^R=\sum_{j=1}^k\tilde{\lambda}_{\Rell,R(j)}/\sum_{i\in\Rell}\tilde{\lambda}_{\Rell,i}$ & Top-$k$ gain fraction. \\
 Tail & $M_{\rm tr}^R=(\sum_{i\in\Rell}\tilde{\lambda}_{\Rell,i})^2/\sum_{i\in\Rell}\tilde{\lambda}_{\Rell,i}^2$ & Effective contributor count. \\
