@@ -1,0 +1,148 @@
+% Include after subsection 5.8, immediately before Section 6:
+% \input{implications_of_marginality}
+% Uses the parent paper's marginalbox, boxblue, boxlightblue, and TikZ setup.
+% All equations and the analytic figure are unnumbered.
+% Starts a new page and uses one column for each subsubsection.
+\clearpage
+\subsection{Implications of marginality}
+\label{sxn:implications_marginality}
+
+\subsubsection{The model-average exponent}
+\label{sxn:model_average_marginality}
+SETOL combines positive layer qualities into the model-quality approximation
+$\overline Q_{\rm NN}\simeq\prod_{\ell=1}^K\overline Q_\ell$
+[Eq.~\eqref{eq:setol_layer_product}]. Its logarithm converts the
+layer product into a sum, giving the average logarithmic quality,
+\[
+ \frac{1}{K}\log\overline Q_{\rm NN}
+ \simeq\frac{1}{K}\sum_{\ell=1}^K\log\overline Q_\ell .
+\]
+The layer product motivates averaging the logarithmic gains of
+the spectral bands. At a fixed checkpoint, Eq.~\eqref{eq:shellpower} gives
+$g_{E,\ell}(\Lambda_\ell)\propto\Lambda_\ell^{2-\alpha_\ell}$.
+Comparing $\Lambda_\ell$ with $b\Lambda_\ell$ inside each fitted window
+multiplies the gain by $b^{2-\alpha_\ell}$. A common factor
+$b>1$ gives every layer the same step in logarithmic scale.
+The powers of their product then add.
+
+\begin{tcolorbox}[marginalbox,title=Marginality on average]
+\[
+\begin{gathered}
+ \bar\alpha:=\frac{1}{K}\sum_{\ell=1}^K\alpha_\ell,\qquad
+ \prod_{\ell=1}^K b^{2-\alpha_\ell}=b^{K(2-\bar\alpha)},\\[3pt]
+ \bar y_E:=\frac{1}{K}\sum_{\ell=1}^K(2-\alpha_\ell)
+          =2-\bar\alpha .
+\end{gathered}
+\]
+\textcolor{boxblue}{The product of the band gains is marginal
+when $\bar\alpha=2$. The mean logarithmic band slope then vanishes.}
+\end{tcolorbox}
+
+This average expresses model marginality as a balance across layers.
+Layers with $\alpha_\ell=2$ give $\bar\alpha=2$. Equal and opposite
+deviations from two also yield this average through compensation.
+
+Two layers with $\alpha_1=1.5$ and $\alpha_2=2.5$ achieve
+$\bar\alpha=2$ through compensation. Doubling the spectral scale
+multiplies their band gains by $\sqrt{2}$ and $1/\sqrt{2}$.
+These reciprocal factors have product one and balance the layer slopes.
+
+\begin{center}
+\resizebox{.96\columnwidth}{!}{%
+\begin{tikzpicture}[x=1cm,y=1cm,font=\sffamily\small,>=Stealth]
+ \path[use as bounding box] (-.85,-.62) rectangle (7.0,3.28);
+ \node[text=boxblue,font=\sffamily\bfseries\small] at (3.05,3.0)
+   {Layers balance their spectral slopes};
+ \draw[->,gray] (0,0) -- (6.7,0);
+ \draw[->,gray] (0,0) -- (0,2.65);
+ \foreach \x/\lab in {0/1,2.4/2,4.8/4}{
+   \draw[gray] (\x,0) -- (\x,-.08);
+   \node[below,font=\small] at (\x,-.08) {$\lab$};
+ }
+ \foreach \y/\lab in {.3/{1/2},1.3/{1},2.3/{2}}{
+   \draw[gray] (0,\y) -- (-.08,\y);
+   \node[left,font=\small] at (-.08,\y) {$\lab$};
+ }
+ \draw[boxblue,line width=1.2pt] (0,1.3) -- (4.8,2.3);
+ \draw[orange!80!black,line width=1.2pt] (0,1.3) -- (4.8,.3);
+ \draw[black,dashed,line width=.9pt] (0,1.3) -- (4.8,1.3);
+ \node[right,text=boxblue] at (4.86,2.3) {$\alpha_1=1.5$};
+ \node[right,text=orange!80!black] at (4.86,.3) {$\alpha_2=2.5$};
+ \node[right,font=\sffamily\scriptsize] at (4.86,1.3) {geometric mean};
+ \node[below,font=\sffamily\scriptsize] at (3.0,-.35)
+   {spectral scale factor $b$ (log scale)};
+\end{tikzpicture}}
+\captionsetup{justification=raggedright,singlelinecheck=false}
+\captionof*{figure}{\textbf{Marginal on average.}
+The band-gain ratios $g_{E,\ell}(b\Lambda_\ell)/g_{E,\ell}(\Lambda_\ell)$
+have a geometric mean of one. Both axes use logarithmic scales.}
+\end{center}
+
+The mean exponent diagnoses average marginality, and its spread
+describes how the layers achieve that balance. Exponents clustered
+near two indicate coordinated layerwise marginality. Exponents
+on opposite sides of two indicate compensation.
+
+\newpage
+\subsubsection{Mode seeking versus geometry seeking}
+\label{sxn:mean_variance_marginality}
+The spectral moments place the mean and variance at different
+marginal boundaries. For a tail
+$\rho(\lambda)\simeq C\lambda^{-\alpha}$ with $\alpha>1$,
+we extend the upper cutoff $\Lambda$ while holding the lower cutoff
+$\lambda_0>0$ and amplitude $C$ fixed. The tail contribution to the
+$k$th raw moment obeys
+\[
+\begin{aligned}
+ \mu_k(\Lambda)&:=\int_{\lambda_0}^{\Lambda}
+                  \lambda^k\rho(\lambda)\,d\lambda,\\
+ \frac{d\mu_k}{d\log\Lambda}
+   &=\Lambda^{k+1}\rho(\Lambda)
+     \simeq C\Lambda^{k+1-\alpha}.
+\end{aligned}
+\]
+Equal contributions from successive logarithmic bands define
+moment marginality. At $\alpha=k+1$, these contributions give
+$\mu_k(\Lambda)\sim C\log(\Lambda/\lambda_0)$.
+For $\alpha>k+1$, the moment converges. Thus $\alpha=2$ is marginal for the first moment and
+$\alpha=3$ is marginal for the second moment. Since the mean is
+finite at $\alpha=3$, the variance inherits the second moment's
+logarithmic growth.
+Both ideal moments are finite for $\alpha>3$.
+
+\paragraph{Mode seeking.}
+We hypothesize that layers with $1<\alpha<2$ seek particular
+modes of the training data and become more prone to overfitting.
+Their upper spectral bands contribute progressively more
+first-moment energy, favoring concentration of squared gain in a
+few leading singular directions. These
+directions amplify training-specific patterns and concentrate the
+layer's response on them. At $\alpha=2$, equal logarithmic bands
+carry equal first-moment energy, balancing that gain across
+spectral scales.
+
+\paragraph{Geometry seeking.}
+We hypothesize that layers with $2<\alpha<3$ seek the geometry of
+the data by amplifying structured variation across directions.
+Their ideal mean is finite while their variance grows with the
+upper cutoff. Higher bands contribute less to
+the mean but more to the second moment. At $\alpha=2.5$, for
+example, moving up one octave multiplies the first-moment band
+weight by $1/\sqrt{2}$ and its second-moment weight by $\sqrt{2}$.
+
+This spread measures how unevenly a layer amplifies its singular
+directions. For the full
+mean-normalized correlation operator $\widetilde{\mathbf X}$
+with $M$ eigenvalues and $\langle\tilde\lambda\rangle=1$,
+\[
+ \operatorname{Var}_{\rm ESD}(\tilde\lambda)
+   =\frac{1}{M}\sum_{i=1}^M(\tilde\lambda_i-1)^2
+   =\frac{1}{M}\|\widetilde{\mathbf X}-I_M\|_F^2 .
+\]
+The normalized spectrum expresses these hypotheses through
+concentration and directional spread. The fraction of the trace
+carried by the leading modes measures concentration. The variance
+of the eigenvalues measures the spread of squared directional
+gains. In the proposed learning picture, mode seeking emphasizes
+the first quantity and geometry seeking emphasizes the second.
+\clearpage

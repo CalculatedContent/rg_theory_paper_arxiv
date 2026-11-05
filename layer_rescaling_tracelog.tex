@@ -1,0 +1,162 @@
+% Section 5.7. Layer dilation identities and the associated coupled scale flow.
+\subsection{Layer dilations and coupled RG beta functions}
+\label{sxn:sgd_layer_flow}
+
+Our spectral RG separates a layer's overall amplitude from its
+normalized spectrum. The same amplitude appears directly in
+backpropagation: rescaling every weight in a layer turns its loss
+response into a logarithmic scale derivative. These derivatives
+define coupled dilation flows through one common loss.
+
+Let $s_\ell=\ln c_\ell$ measure a layer dilation,
+$\mathbf z_\ell$ its weighted input, and
+$\mathcal L_{\mathcal B}=\langle L\rangle_{\mathcal B}$ the mean
+prediction loss. Holding the minibatch, layer shapes, and biases
+fixed, use this loss as a potential to define a continuous flow
+in the log scales $\mathbf s=(s_1,\ldots,s_K)$, with parameter $\tau$:
+\begin{tcolorbox}[marginalbox,title=The coupled dilation beta functions]
+\eqtight{\begin{aligned}
+ \beta_\ell(\mathbf s)
+   :=\frac{ds_\ell}{d\tau}
+   &=-\frac{\partial\mathcal L_{\mathcal B}}{\partial\ln c_\ell}\\
+   &=-\left\langle\sum_i z_{\ell i}
+               \frac{\partial L}{\partial z_{\ell i}}\right\rangle_{\mathcal B}\\
+   &=-\langle\W_\ell,\nabla_{\W_\ell}\mathcal L_{\mathcal B}\rangle_F .
+\end{aligned}}
+\takeaway{Backpropagation supplies the logarithmic scale derivative
+that generates each layer's loss-decreasing dilation.}
+\end{tcolorbox}
+
+\paragraph{Loss and layer scale.}
+For a feedforward network, write $L^{(n)}$ for the prediction loss of
+example $n$. Its minibatch mean is
+\[
+  \mathcal L_{\mathcal B}
+   :=\frac{1}{|\mathcal B|}\sum_{n\in\mathcal B}L^{(n)}
+   =\langle L\rangle_{\mathcal B},
+\]
+and its weight derivative is
+$\nabla_{\W_\ell}\mathcal L_{\mathcal B}$.
+Parameterize each layer by
+\[
+  \W_\ell=e^{s_\ell}\overline{\W}_\ell,\qquad
+  c_\ell=e^{s_\ell}>0,\qquad
+  \mathbf z_\ell=\W_\ell\mathbf h_{\ell-1} .
+\]
+Each fixed nonzero $\overline{\W}_\ell$ specifies the layer shape;
+varying $s_\ell$ changes only its common amplitude.
+
+\paragraph{The logarithmic derivative in backpropagation.}
+For one example, suppress its index. The activation is
+$\mathbf h_\ell=f_\ell(\mathbf z_\ell+\mathbf b_\ell)$.
+Varying only $s_\ell$ gives
+$\partial_{s_\ell}\mathbf z_\ell=\mathbf z_\ell$.
+Where the network is differentiable, the chain rule gives
+\[
+\begin{aligned}
+ \nabla_{\W_\ell}L
+   &=(\nabla_{\mathbf z_\ell}L)\mathbf h_{\ell-1}^{\top},\\
+ \frac{\partial L}{\partial s_\ell}
+  &=\mathbf z_\ell^{\top}\nabla_{\mathbf z_\ell}L
+   =\langle\W_\ell,\nabla_{\W_\ell}L\rangle_F .
+\end{aligned}
+\]
+For each nonzero component, hold its sign and all other components
+fixed. Its logarithmic derivative is
+\[
+ z_{\ell i}\frac{\partial L}{\partial z_{\ell i}}
+   =\frac{\partial L}
+          {\partial\ln|(\W_\ell\mathbf h_{\ell-1})_i|} .
+\]
+The response to a common scale of the weighted-input vector sums
+these component responses. Averaging over examples gives
+$\partial\mathcal L_{\mathcal B}/\partial\ln c_\ell$.
+The operator $\partial_{\ln c_\ell}$ generates an infinitesimal
+dilation, the rescaling part of RG. The boxed beta functions turn
+this loss response into a flow along each layer's dilation coordinate.
+
+\newpage
+\paragraph{One loss couples the layer flows.}
+Each $\beta_\ell(\mathbf s)$ responds to the other layer scales
+through the common loss. The input $\mathbf h_{\ell-1}$ depends on
+earlier layers, while
+$\nabla_{\mathbf z_\ell}L$ carries the response through later layers.
+Changing one layer can therefore change the responses of others.
+A stationary scale for layer $\ell$ satisfies
+$\beta_\ell(\mathbf s)=0$; its location can depend on the other
+layers. A layer can be stationary while its neighbors still move,
+and their motion can shift its stationary scale.
+
+\begin{center}
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[x=1cm,y=1cm,font=\sffamily\small,>=Stealth]
+ \path[use as bounding box] (-.15,-.12) rectangle (8.05,3.75);
+ \node[font=\sffamily\bfseries\small,text=boxblue]
+   at (3.95,3.54) {One common minibatch loss};
+ \node[font=\normalsize] (loss) at (3.95,3.08)
+   {$\mathcal L_{\mathcal B}(s_1,s_2,s_3)$};
+ \foreach \x/\l in {1.1/1,3.95/2,6.8/3}{
+   \node[draw=boxblue,fill=boxlightblue,rounded corners=2pt,
+     minimum width=2.2cm,minimum height=1.00cm,
+     align=center,line width=.7pt] (layer\l) at (\x,2.03)
+     {layer $\l$\\[3pt]$\dot s_{\l}=\beta_{\l}(\mathbf s)$};
+   \draw[->,boxblue!65,line width=.65pt]
+     (loss.south) -- (layer\l.north);
+ }
+ \draw[<->,boxblue,line width=1pt] (layer1.east) -- (layer2.west);
+ \draw[<->,boxblue,line width=1pt] (layer2.east) -- (layer3.west);
+ \draw[boxblue!55] (layer1.south) -- (1.1,.92) -- (6.8,.92) -- (layer3.south);
+ \draw[boxblue!55] (layer2.south) -- (3.95,.92);
+ \draw[->,boxblue!70] (3.95,.92) -- (3.95,.60);
+ \node[font=\small] at (3.95,.30)
+   {$\beta_1(\mathbf s^\star)=\beta_2(\mathbf s^\star)
+     =\beta_3(\mathbf s^\star)=0$};
+\end{tikzpicture}}
+\captionof*{figure}{\textbf{Coupled layer dilations.}
+Each layer contributes one scale response to the shared loss.
+A joint stationary point satisfies every layer's dilation condition.}
+\end{center}
+
+The coupled flow decreases the common minibatch loss,
+\[
+ \frac{d\mathcal L_{\mathcal B}}{d\tau}
+   =-\sum_{\ell=1}^{K}\beta_\ell(\mathbf s)^2\leq0 .
+\]
+At a joint fixed point, $\boldsymbol\beta(\mathbf s^\star)=0$, so
+no layer dilation changes the loss to first order. The loss itself
+need not vanish.
+
+\paragraph{The same dilation rescales the ESD.}
+For $\W_\ell\in\mathbb R^{N_\ell\times M_\ell}$, the correlation matrix is
+$\X_\ell=\W_\ell^\top\W_\ell/N_\ell$.
+A dilation acts on this operator, its eigenvalues, and its
+probability-normalized ESD as
+\[
+\begin{aligned}
+ \W_\ell&\mapsto c_\ell\W_\ell,&
+ \X_\ell&\mapsto c_\ell^2\X_\ell,\\
+ \lambda_{\ell i}&\mapsto c_\ell^2\lambda_{\ell i},&
+ \rho_{\ell,c}(\lambda)&=c_\ell^{-2}
+                 \rho_\ell(\lambda/c_\ell^2).
+\end{aligned}
+\]
+Along the flow, $\partial_{s_\ell}\X_\ell=2\X_\ell$ gives
+\[
+ \frac{d\X_\ell}{d\tau}=2\beta_\ell(\mathbf s)\X_\ell,\qquad
+ \frac{d\ln\lambda_{\ell i}}{d\tau}=2\beta_\ell(\mathbf s)
+\]
+for $\lambda_{\ell i}>0$ in the second identity. Thus every
+positive eigenvalue shifts at the same rate on a logarithmic axis.
+The full-spectrum first-moment normalization of
+Section~\ref{sxn:meanlog_gauge} removes this common amplitude,
+\[
+ \widetilde{\X}_\ell=\frac{\X_\ell}{m_\ell},\qquad
+ m_\ell=\frac{1}{M_\ell}\Tr\X_\ell,\qquad
+ \partial_{\ln c_\ell}\widetilde{\X}_\ell=0 .
+\]
+Both $\X_\ell$ and its positive mean $m_\ell$ acquire the factor
+$c_\ell^2$, so their ratio is unchanged. The normalized ESD retains
+the spectral shape used for ECS selection. Thus backpropagation
+exposes the same layer dilation whose amplitude our spectral RG
+normalization removes.
+
